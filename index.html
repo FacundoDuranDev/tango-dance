@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tango — Library of Dance (visor)</title>
+<style>
+  :root {
+    --bg: #12100e;
+    --panel: #1c1917;
+    --panel2: #262220;
+    --line: #3a332f;
+    --text: #ede7e0;
+    --muted: #a89f95;
+    --accent: #e0a04a;
+    --accent-soft: rgba(224,160,74,.14);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex; overflow: hidden;
+  }
+  /* ---------- Sidebar ---------- */
+  #sidebar {
+    width: 330px; min-width: 330px; height: 100vh; overflow-y: auto;
+    background: var(--panel); border-right: 1px solid var(--line);
+    padding: 14px; scrollbar-width: thin;
+  }
+  #sidebar h1 { font-size: 17px; margin: 2px 0 2px; }
+  #sidebar .src { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  #sidebar .src a { color: var(--muted); }
+  #search {
+    width: 100%; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--panel2); color: var(--text);
+    font-size: 14px; margin-bottom: 12px;
+  }
+  #search:focus { outline: 1px solid var(--accent); }
+  details.sec { margin-bottom: 6px; }
+  details.sec > summary {
+    cursor: pointer; font-weight: 600; font-size: 14px; padding: 7px 8px;
+    border-radius: 8px; list-style: none; user-select: none;
+  }
+  details.sec > summary::before { content: "▸ "; color: var(--accent); }
+  details.sec[open] > summary::before { content: "▾ "; }
+  details.sec > summary:hover { background: var(--panel2); }
+  .subhead {
+    font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); margin: 10px 4px 3px 14px;
+  }
+  button.item {
+    display: block; width: 100%; text-align: left; border: 0; background: none;
+    color: var(--text); font: inherit; font-size: 13.5px; cursor: pointer;
+    padding: 5px 8px 5px 22px; border-radius: 7px;
+  }
+  button.item:hover { background: var(--panel2); }
+  button.item.active { background: var(--accent-soft); color: var(--accent); }
+  .hidden { display: none !important; }
+  /* ---------- Main ---------- */
+  #main {
+    flex: 1; height: 100vh; overflow-y: auto;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 22px 28px 40px;
+  }
+  #stage { width: 100%; max-width: 1150px; }
+  #crumb { font-size: 13px; color: var(--muted); margin-bottom: 2px; min-height: 18px; }
+  #vtitle { font-size: 22px; font-weight: 650; margin: 0 0 14px; }
+  #frame-wrap {
+    position: relative; width: 100%; aspect-ratio: 16 / 9;
+    background: #000; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.5);
+  }
+  #frame-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  /* ---------- Controls ---------- */
+  #controls {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    margin-top: 14px;
+  }
+  .btn {
+    border: 1px solid var(--line); background: var(--panel2); color: var(--text);
+    font: inherit; font-size: 14px; padding: 8px 14px; border-radius: 9px;
+    cursor: pointer; user-select: none;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn.on { background: var(--accent); color: #1a1206; border-color: var(--accent); font-weight: 600; }
+  .grp { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .grp .btn { border: 0; border-radius: 0; }
+  .grp .btn + .btn { border-left: 1px solid var(--line); }
+  .spacer { flex: 1; }
+  #links { margin-top: 12px; font-size: 13px; color: var(--muted); }
+  #links a { color: var(--accent); text-decoration: none; }
+  #links a:hover { text-decoration: underline; }
+  #keys { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+  kbd {
+    background: var(--panel2); border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 4px; padding: 0 5px; font-size: 11.5px;
+  }
+  /* ---------- Mobile ---------- */
+  #menu-toggle { display: none; }
+  @media (max-width: 800px) {
+    body { flex-direction: column; overflow: auto; }
+    #sidebar { width: 100%; min-width: 0; height: auto; max-height: 45vh; order: 2; border-right: 0; border-top: 1px solid var(--line); }
+    #main { height: auto; order: 1; padding: 14px; }
+    #vtitle { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <h1>Tango — Library of Dance</h1>
+  <div class="src">Videos de <a href="https://www.libraryofdance.org/dances/tango/" target="_blank" rel="noopener">libraryofdance.org</a></div>
+  <input id="search" type="search" placeholder="Buscar figura… (ej: ocho, gancho, corte)" autocomplete="off">
+  <div id="nav"></div>
+</nav>
+
+<main id="main">
+  <div id="stage">
+    <div id="crumb"></div>
+    <h2 id="vtitle"></h2>
+    <div id="frame-wrap"><div id="player"></div></div>
+    <div id="controls">
+      <button class="btn" id="btn-restart" title="Volver al inicio (R)">⟲ Reiniciar</button>
+      <button class="btn" id="btn-loop" title="Repetir al terminar (L)">🔁 Bucle</button>
+      <div class="grp" id="speed" title="Velocidad de reproducción">
+        <button class="btn" data-rate="0.25">0.25×</button>
+        <button class="btn" data-rate="0.5">0.5×</button>
+        <button class="btn" data-rate="0.75">0.75×</button>
+        <button class="btn on" data-rate="1">1×</button>
+      </div>
+      <span class="spacer"></span>
+      <button class="btn" id="btn-prev" title="Video anterior (←)">◀ Anterior</button>
+      <button class="btn" id="btn-next" title="Video siguiente (→)">Siguiente ▶</button>
+    </div>
+    <div id="links"></div>
+    <div id="keys">
+      Atajos: <kbd>Espacio</kbd> pausa · <kbd>R</kbd> reiniciar · <kbd>L</kbd> bucle · <kbd>←</kbd>/<kbd>→</kbd> anterior/siguiente · <kbd>/</kbd> buscar
+    </div>
+  </div>
+</main>
+
+<script>
+const DATA = {"favs":["awa","aoc","aga","spl","sfh","sdt","lvv","eca","eos","bre"],"sections":[{"name":"Modern Argentine Tango","subs":[{"name":"Walking","items":[{"c":"awa","t":"Walk","y":"75aa55IZvMs"},{"c":"aso","t":"Step Out","y":"jEtFK0_Rklc"},{"c":"acr","t":"The Cross","y":"h2Tk8O4zOv8"},{"c":"asn","t":"Sentada","y":"kPu7QpIUIp0"},{"c":"ase","t":"Sentada (Back and Forth)","y":"fRROkwg6WtM"},{"c":"apa","t":"Pasitos","y":"eYPt_dBif24"},{"c":"asw","t":"Syncopated Walk","y":"BnZGllYrBdE"}]},{"name":"Rocking","items":[{"c":"aha","t":"Hamaca","y":"TWTUSROo4go"}]},{"name":"Ochos","items":[{"c":"aoc","t":"Ochos","y":"4N1cZnq7tgY"},{"c":"abo","t":"Back Ochos","y":"qsIYKbkgr-Q"},{"c":"aff","t":"Ochos on the Side (from The Cross)","y":"N8S3Hf6hrF4"},{"c":"afb","t":"Back Ochos on the Side","y":"p22PK2Hviio"}]},{"name":"Barridas","items":[{"c":"aba","t":"Barrida","y":"1mOBRNugEYk"}]},{"name":"Castigadas & Ganchos","items":[{"c":"aca","t":"Castigada","y":"HN-WrsRfDDc"},{"c":"aga","t":"Gancho","y":"R1QQ4jhAdr8"},{"c":"agb","t":"Gancho in Back Ochos on the Side","y":"bD1xTYal4Bg"}]},{"name":"Molinetes","items":[{"c":"amo","t":"Molinete","y":"64xEUmYnQxY"},{"c":"aml","t":"Longer Molinete","y":"X6buXTzjyls"}]},{"name":"Giros","items":[{"c":"agg","t":"Grapevine Giro","y":"PigxSGxkhU8"}]},{"name":"Eight Count Basic","items":[{"c":"aeb","t":"Eight Count Basic","y":"p0LcMJZ6GpI"},{"c":"aeh","t":"Hamaca in Eight Count Basic","y":"3tA1moyhUVA"},{"c":"aeo","t":"Ochos in Eight Count Basic","y":"D53CW8xfnPM"},{"c":"aec","t":"Castigada in Eight Count Basic","y":"TXu4JYTXJvI"},{"c":"aeg","t":"Gancho in Eight Count Basic","y":"7qtukEqi1bM"},{"c":"asx","t":"Six Count Basic","y":"oeyOwby2P88"},{"c":"asv","t":"Seven Count Basic","y":"XFpvvPDkOQ8"}]},{"name":"Argentine Tango Mixer","items":[{"c":"atm","t":"Argentine Tango Mixer","y":"vZyuhGIq870"}]}]},{"name":"Contemporary Social Tango","subs":[{"name":"Fans","items":[{"c":"spl","t":"Promenade Left Turn Fan (Social Tango Basic)","y":"BnrrqimjzTY"},{"c":"spr","t":"Promenade Right Turn Fan","y":"yPliyYiodT8"},{"c":"sts","t":"Trouble Step","y":"pjplaJgVO5E"},{"c":"srl","t":"Rocking Left Turn Fan","y":"-cX_NXH9k2I"},{"c":"srr","t":"Rocking Right Turn Fan","y":"PKM5vAoxzXo"},{"c":"slg","t":"Lead's Grapevine Fan","y":"vUYH-D5u_lk"},{"c":"sfg","t":"Follow's Grapevine Fan","y":"ELGfOgECzQI"},{"c":"sef","t":"Eight Count Fan (Side, Forward, Back)","y":"uNZDy0tFCr4"},{"c":"sbf","t":"Backing Fan (American Tango Basic)","y":"77LugzIU9Gc"},{"c":"sbl","t":"Backing Left Turn Fan","y":"Y_s41mJwXfw"}]},{"name":"Promenades","items":[{"c":"sfh","t":"Five Step Promenade (Changing Hands)","y":"MeRaVi6DQ1M"},{"c":"sfs","t":"Five Step Promenade (Scorpion Position)","y":"IYHp3kYAdYQ"},{"c":"sch","t":"Tango Chassé","y":"2iqeE6t2cgI"},{"c":"ssc","t":"Scorpion Side Steps","y":"AmXEb2VeNQw"},{"c":"ssl","t":"Scorpion Side Steps (Long Version)","y":"0H8oELyCZE0"},{"c":"sml","t":"Promenade Media Luna","y":"HuReLEd-G5w"},{"c":"srm","t":"Repeated Promenade Media Luna","y":"ISXcl-qzisg"},{"c":"smf","t":"Promenade Media Luna and Five Step Promenade","y":"TfODiVVVvMI"}]},{"name":"Grapevines","items":[{"c":"sgd","t":"Grapevine with Dive Bomb Exit","y":"WwXDekytpJ4"},{"c":"sgl","t":"Long Grapevine","y":"mnvyluQ4cjU"},{"c":"sgc","t":"Grapevine (Chassé Timing)","y":"lbK2lpNLNOY"},{"c":"sgo","t":"Grapevine (Faster than the Music)","y":"BSz1Enex1Pk"},{"c":"sgf","t":"Grapevine (Follow Only)","y":"uthm1jUw-Rs"},{"c":"sdg","t":"Drunken Grapevine","y":"pfQFzPomUJ4"}]},{"name":"Ruedas","items":[{"c":"sru","t":"Rueda","y":"_qpvvp3CRWE"},{"c":"spo","t":"Pomander Turn","y":"dB4A4lcRaFE"},{"c":"sgr","t":"Grapevine Rueda","y":"IThi3JfskmI"}]},{"name":"Ochos","items":[{"c":"sso","t":"Single Ocho","y":"tApqpKQBD4I"},{"c":"smo","t":"Multiple Ochos","y":"AaHZt-esM7Q"},{"c":"scc","t":"Counter Crossing","y":"GtuUOa8j-eo"},{"c":"sfo","t":"Follow's Solo","y":"Oaj3IUUel6w"},{"c":"sft","t":"Touches Styling","y":"LAk-c9ruet8"},{"c":"sfk","t":"Kicks Styling","y":"GJb_u58cvcE"},{"c":"sfw","t":"Sweeps Styling","y":"mfx3W_jn6uM"},{"c":"sfe","t":"Feather Stitch Styling","y":"nocSd32zANw"},{"c":"ssw","t":"Fast Swivels Styling","y":"9S5gOMYW0uU"},{"c":"sla","t":"Lead's A-Frame Stance","y":"iUtcdEZx05I"},{"c":"sro","t":"Promenade to Ochos","y":"MTaYrURZ48U"}]},{"name":"Media Lunas (Puzzle Steps)","items":[{"c":"sth","t":"Three Step Promenade","y":"Afd7zVitEuE"},{"c":"sbo","t":"Media Luna Sanjuanina (Box Step)","y":"yRks1IygmDg"},{"c":"spu","t":"Media Luna Puntana (Rocking Box)","y":"nucqGN0Z3oQ"},{"c":"slo","t":"Media Luna Lola (Trapezoid Box)","y":"gUfziMOdCR0"},{"c":"ssa","t":"Media Luna Salsa","y":"0ZQ7bXQLygA"}]},{"name":"Rocking Steps","items":[{"c":"smn","t":"Rocking Molinete","y":"_ZXinBlbvUU"},{"c":"str","t":"Short Rocking Molinete","y":"O8zpVaLXGUs"},{"c":"smc","t":"Molinete (Chassé Timing)","y":"iz1eJmmpLec"},{"c":"sbr","t":"Backing Rocking Corte","y":"OkyaqyvN5m0"},{"c":"src","t":"Single Rocking Corte","y":"WxdnpG97DlE"},{"c":"sdr","t":"Double Rocking Corte","y":"y22C9ImqpgE"},{"c":"srw","t":"Rockaway Lunge","y":"Dqfkel1lb3I"},{"c":"srf","t":"Rockaway Lunge (Follow's Solo Version)","y":"UCYUS42x_tQ"},{"c":"srp","t":"Rocking Promenade (Chassé Timing)","y":"YGOS8B-K4Wc"}]},{"name":"Pivots","items":[{"c":"spv","t":"Pivots (Chassé Timing)","y":"h6JPYVrPuNA"},{"c":"svu","t":"Pivots and Underarm Turn","y":"_21ixwPcBQc"}]},{"name":"Added Styling","items":[{"c":"sfr","t":"Frotado","y":"Njl_kv-AhS4"},{"c":"ssp","t":"Lead's Shoe Polishing","y":"is4G0ugfUWw"},{"c":"shr","t":"Lead's Heel Rap","y":"_MwgPYEZAe0"},{"c":"sat","t":"Using All the Time to Close","y":"UEzrL7g9ri4"},{"c":"ssi","t":"Silence","y":"EAHtYx9kS9k"}]},{"name":"Dips & Lunges","items":[{"c":"sdo","t":"Side Step Dip (on 1)","y":"6Po_USCXlNs"},{"c":"sdn","t":"Dipping Fan","y":"jcdzasGBh50"},{"c":"sdt","t":"Cross-Step Dip (on 3)","y":"FDNqdXqzCZU"},{"c":"sfd","t":"Face Loop Dip","y":"omROi6S2F-g"},{"c":"sda","t":"Dip after the Music Ends","y":"nAOR922000M"},{"c":"sdv","t":"Grapevine Dip","y":"EWIoVKUhMl4"},{"c":"ssd","t":"Counterbalanced Sit Dip","y":"YF5_H8PG6xo"},{"c":"sta","t":"Toss Across Dip","y":"3Gpcot9hMIk"},{"c":"sdf","t":"Promenade Dip (on 4)","y":"_ZLkPIZswng"},{"c":"sid","t":"Inside Turn Dip","y":"p7fIY1p3xVI"},{"c":"sit","t":"Inside Turn Face Loop Dip","y":"1l2tRPxcUwQ"},{"c":"spd","t":"Pivots out of a Dip","y":"2j9RJCxj_EI"},{"c":"sic","t":"Intensifying Rocking Corte Dip","y":"FCCyx2of1dc"},{"c":"sib","t":"Intensifying Rocking Corte Dip (Counterbalanced)","y":"fqTJQpAgoCw"},{"c":"srd","t":"Free Spin Dip","y":"t7VKGIVpxms"},{"c":"slu","t":"Promenade Lunge","y":"Z1lXlb81ujM"},{"c":"slt","t":"Lunge and Turning Corte","y":"DIhvr2YRCiU"},{"c":"sil","t":"Inside Turn Cradle Lunge","y":"wrHLlhDOOSc"}]},{"name":"Alternate Timings","items":[{"c":"svl","t":"Tango Vals (Vals Cruzado)","y":"gxWb1VXjP-k"},{"c":"sos","t":"Fast One Step Tango","y":"rQrlRlc3p6k"}]},{"name":"Advanced Concepts","items":[{"c":"snv","t":"Innovation","y":"QHTGfagyLiE"},{"c":"sad","t":"\"Advanced\" Tango (Not Matching Partner)","y":"2BYY2qpQ1tg"},{"c":"scp","t":"Role Reversal","y":"DqCUV7mg1Ys"},{"c":"sbg","t":"Follow's Initiative - Grapevine Ochos","y":"IOKpg3RMzQw"}]},{"name":"Sequences","items":[{"c":"ssf","t":"Tango Practice Sequence (Flio Tango)","y":"0I7KbyiLUPg"},{"c":"ssn","t":"The One Step Tango","y":"37F_R_jjLao"},{"c":"ssk","t":"The Skater's Tango","y":"WzR3pmyz4Ko"},{"c":"sst","t":"The 2014 Tango","y":"PSN60MLFsfQ"},{"c":"ssr","t":"Frotado Tango","y":"3tMngpq_y0o"}]}]},{"name":"Early Buenos Aires Tango (c. 1916)","subs":[{"name":"Full Song Demo","items":[{"c":"lfs","t":"Full Song Demo","y":"3q7zUOnjMDY"}]},{"name":"Pasos Paseos","items":[{"c":"lpp","t":"Pasos Paseos Serenos","y":"jhOZHAAqlR0"},{"c":"lpd","t":"Pasos Paseos (En Paralelas a la Derecha)","y":"fWLRkoXPhQk"},{"c":"lpi","t":"Pasos Paseos (En Paralelas a la Izquierda)","y":"fG9UlyvA_Cg"},{"c":"lpa","t":"Pasos Paseos (En Paralelas de Avance)","y":"5agrimZwI-0"},{"c":"lpr","t":"Pasos Paseos (En Paralelas de Retroceso)","y":"egNYbEtWbD4"},{"c":"lac","t":"Pasos Paseos Acompasados","y":"td8h57xaoYM"},{"c":"lal","t":"Pasos Paseos Alternados","y":"lT2RzWxdfaY"},{"c":"lps","t":"Pasitos","y":"XBKjfvbwhOM"}]},{"name":"Saltitos","items":[{"c":"lso","t":"Saltito #1","y":"cVan_TLWeEE"},{"c":"lsw","t":"Saltito #2","y":"syqAZwuyzAs"},{"c":"lsh","t":"Saltito #3","y":"y56TByupb-o"},{"c":"lsf","t":"Saltito #4","y":"6RKnn21z0gg"}]},{"name":"Cruces de Píes","items":[{"c":"lvo","t":"Volcando El Medio y Volcando Afuera","y":"GJf0Qo9scNY"},{"c":"lca","t":"Cruces de Píes Avanzando","y":"FlI0mP24PO8"},{"c":"lrf","t":"Cruces de Píes Laterales (Right in Front)","y":"SFLgawfuO-Y"},{"c":"lrb","t":"Cruces de Píes Laterales (Right Behind)","y":"uU1wbUgs6JE"},{"c":"llf","t":"Cruces de Píes Laterales (Left in Front)","y":"HMN2mnGQPIM"},{"c":"llb","t":"Cruces de Píes Laterales (Left Behind)","y":"xl5BPhYOIk8"},{"c":"lcd","t":"Cruces de Píes Laterales (Changing Direction)","y":"9zsauknpiyk"}]},{"name":"Vueltas","items":[{"c":"lvi","t":"Vueltas (a la Izquierda)","y":"b5HNDm8tTFg"},{"c":"lvd","t":"Vueltas (a la Derecha)","y":"PKZXbZ2wkFQ"}]},{"name":"Molinetes","items":[{"c":"lml","t":"Molinete (Lead as Axle)","y":"wfplchezLQc"},{"c":"lmg","t":"Molinete (Follow's Grapevine)","y":"rVaf-XTKuzs"},{"c":"lmf","t":"Molinete (Follow as Axle)","y":"HAmPgFg4iy8"},{"c":"lmc","t":"Molinete (Circling Each Other)","y":"ZciJ3ba0-kA"},{"c":"lms","t":"Molinete (Switching Directions)","y":"f35V_slzlms"}]},{"name":"Paso Lateral","items":[{"c":"lpl","t":"Paso Lateral","y":"9dRuU7Xh63g"},{"c":"llc","t":"Paso Lateral (Changing Directions)","y":"simPrxDa8qY"}]},{"name":"Paso Pique Acompasado","items":[{"c":"lpq","t":"Paso Pique Acompasado","y":"X8JZS3YI-KE"},{"c":"lpc","t":"Paso Pique Acompasado (Corrida)","y":"nbAtH8jqrmY"}]},{"name":"El Ocho","items":[{"c":"loc","t":"El Ocho","y":"rL8mbTED2F0"},{"c":"lop","t":"El Ocho (En Paralelas)","y":"Fn85rWw-pbQ"}]},{"name":"Sentadas","items":[{"c":"lho","t":"Sentada #1 (Walk 1, Hold 1)","y":"h_o94zpRzZU"},{"c":"lhw","t":"Sentada #2 (Walk 2, Hold 2)","y":"rju2tuPgISM"},{"c":"lhh","t":"Sentada #3 (Walk 3, Hold 1)","y":"lL3oDrR-s94"},{"c":"lhf","t":"Sentada #4","y":"4ki-9Ja-KVA"},{"c":"lhv","t":"Sentada #5","y":"SL8fqdAc53s"},{"c":"lhx","t":"Sentada #6","y":"vwBO0193bJ4"},{"c":"lhn","t":"Sentada #7","y":"V-iq_zkaOmw"},{"c":"lsu","t":"La Sentada Unica","y":"gXOwhdi_qh8"},{"c":"lua","t":"La Sentada Unica (Adapted)","y":"ySeg_EKNfXU"}]},{"name":"Media Lunas","items":[{"c":"lsj","t":"Media Luna #1 - Sanjuanina","y":"YvF6Pmu91Sc"},{"c":"lvv","t":"Media Luna #2 - Vai-Ven (a.k.a. Santiagueña)","y":"GpB1NXlyj5k"},{"c":"lve","t":"Media Luna #2 - Vai-Ven (Extended Version)","y":"LL4b6-vyldE"},{"c":"ljj","t":"Media Luna #3 - Jujeña","y":"hCkWW1GfLcQ"},{"c":"ldc","t":"Media Luna #4 - Doble Cuatro or Riojana","y":"zKhRPi5REoU"},{"c":"lst","t":"Media Luna #5 - Salteña","y":"1dSQFAP52G8"},{"c":"len","t":"Media Luna #6 - Entrerriana","y":"XxZayiYn6Vk"},{"c":"lsa","t":"Media Luna #7 - Santafecina","y":"Kef16lAxu1c"},{"c":"lmi","t":"Media Luna #8 - Mendocina (a la Izquierda)","y":"ziSGZHWXJ0A"},{"c":"lmd","t":"Media Luna #8 - Mendocina (a la Derecha)","y":"J5Jo3pseO-w"},{"c":"ltu","t":"Media Luna #9 - Tucumana","y":"dkIno28SXUo"},{"c":"lte","t":"Media Luna #9 - Tucumana (Extended Version)","y":"zYIIRx3Xkt4"},{"c":"lpo","t":"Media Luna #10 - Porteña","y":"33g7cZzkqS4"},{"c":"lpf","t":"Media Luna #10 - Porteña (Flattened Version)","y":"6wSwIxSi4JU"},{"c":"lpu","t":"Media Luna #11 - Puntana","y":"SzBtboxcaR4"},{"c":"lna","t":"Media Luna #11 - Puntana (Adapted)","y":"SY06kC0OU4c"},{"c":"lco","t":"Media Luna #12 - Cordobesa","y":"L-jgxHU7pjU"},{"c":"lct","t":"Media Luna #12 - Correntina","y":"-tY8gt0adN8"},{"c":"lcr","t":"Media Luna #12 - Catamarqueña","y":"Np45Dhgv18c"}]}]},{"name":"Early Tango Around the World (1911-1915)","subs":[{"name":"Full Song Demo","items":[{"c":"efs","t":"Full Song Demo","y":"czdWA9GaWyg"}]},{"name":"Walking","items":[{"c":"elm","t":"La Marcha","y":"MPXcJtdeMLE"},{"c":"eep","t":"El Paseo","y":"J2q3Z9WQ4uE"},{"c":"ers","t":"Running Step","y":"4NY5FI-Zh38"}]},{"name":"Cortes","items":[{"c":"eca","t":"Corte A (Forward, Side, Close, Back)","y":"P21fIvtLpAk"},{"c":"etf","t":"Corte A (with Toe to Floor)","y":"zVdY1Y2DBYQ"},{"c":"etr","t":"Corte A (with Toe Raised)","y":"vL_-45mudq8"},{"c":"eaa","t":"Corte A (1, and, 2, 3 Timing)","y":"Mv9tmbYyA9Q"},{"c":"eaw","t":"Corte A2 (Forward, Side, Replace, Back)","y":"Ba6GSNi30Kk"},{"c":"eah","t":"Corte A3 (Forward, Forward, Close, Back)","y":"CoRys-xjwBQ"},{"c":"eaf","t":"Corte A4 (Forward, Forward, Heel Strike, Back)","y":"nyxf6ub-JtI"},{"c":"eav","t":"Corte A5 (Forward, Forward, Replace, Back)","y":"dkSc5V_OROI"},{"c":"eax","t":"Corte A6 (Cross, Forward, Close, Back)","y":"PzyD0hwzgwE"},{"c":"eas","t":"Corte A7 (Cross, Throwaway, Back)","y":"1uVPdx-_KCg"},{"c":"eat","t":"Corte A7 (Throwaway) (Adapted)","y":"oqHJcEcvZgI"},{"c":"eae","t":"Corte A8 (Forward, Sweep Forward, Back)","y":"VLTCxhOCVuA"},{"c":"ean","t":"Corte A9 (Forward, Close without Weight, Back)","y":"tn2RbVtUaDg"},{"c":"ead","t":"Corte A10 (Forward, Point Side, Back)","y":"Q4Bkk_MI9YI"},{"c":"eal","t":"Corte A11 (Back, Side, Close, Forward)","y":"CvJXPZ0nT1w"},{"c":"eac","t":"Corte A12 (Back, Brush, Forward)","y":"gVfXNl-1fds"},{"c":"ear","t":"Corte A13 (Foot Displacement)","y":"K-qrApnhd0E"},{"c":"ecb","t":"Corte B (Back, Side, Close, Back)","y":"kiX5iZlYIHo"},{"c":"ebw","t":"Corte B2 (Back, Side, Replace, Back)","y":"ogaqarY9c0k"},{"c":"ebh","t":"Corte B3 (Back, Side, Heel Strike, Back)","y":"jQRi_q9I6F0"},{"c":"ebf","t":"Corte B4 (Back, Close without Weight, Back)","y":"BDVgV4N9ufM"},{"c":"ebv","t":"Corte B5 (Cross Behind, Point Side, Back)","y":"6NXd8rVJ0PQ"},{"c":"ecc","t":"Corte C (Forward, Forward, Close, Forward)","y":"MBh5Ej5Q0vM"},{"c":"ecd","t":"Corte D (Single Hesitation Corte)","y":"1cFsA0YsAfU"},{"c":"ece","t":"Corte E (Sentada Combination)","y":"a4MCacJp9Ts"},{"c":"ecf","t":"Corte F (Double Box Corte)","y":"tNd1-QU9AWo"}]},{"name":"El Ocho","items":[{"c":"eoo","t":"Ochos (Open Styling)","y":"rIGqlcshJlk"},{"c":"eop","t":"Ochos (Points Styling)","y":"9v8cOHdXVq8"},{"c":"eok","t":"Ochos (Kicks Styling)","y":"lKqlHo-LHVw"},{"c":"eos","t":"Ochos (Sweeps Styling)","y":"Zyp2X60uGWc"},{"c":"eof","t":"Ochos (Feather Stitch Styling)","y":"VqT3YWSL5sE"},{"c":"eoe","t":"The Feather Stitch","y":"0FqVetOTZPw"},{"c":"eow","t":"Ochos (Swivels Styling)","y":"QGZ9bb1YuPI"},{"c":"eob","t":"Ochos, Big and Small (Pivots Styling)","y":"4e3-N2aJ2wE"},{"c":"eoc","t":"Ochos (Back Ochos)","y":"U2A4lMg_8Fw"},{"c":"efo","t":"Ochos (Follow's Solo)","y":"IoqUH3cHrjY"},{"c":"eoh","t":"Sheaves","y":"0hhfhGjZQ_g"},{"c":"epp","t":"Pointed Paseo","y":"0xNFgc0uJb8"},{"c":"ems","t":"Ochos (The Major Scissors)","y":"epdg9vRpOSM"},{"c":"enm","t":"The Nip Up and Major Scissors","y":"-58eF22a-n8"},{"c":"eoa","t":"Ochos (Back and Forward Version)","y":"aI0rShdXQs4"}]},{"name":"Scissors","items":[{"c":"esc","t":"Scissors","y":"SsnIJypF9DE"},{"c":"esb","t":"Scissors, Big and Small","y":"NPWFMss8Zsg"},{"c":"esr","t":"Scissors, Big and Small with Crossed Corte","y":"hMyOFGx2mV4"},{"c":"ess","t":"Side Step Scissors","y":"41DXt0cCjuM"},{"c":"esi","t":"Side Step Scissors, Big and Small","y":"HnUJKlm6SGM"},{"c":"esa","t":"Back Side Step Scissors for the Lead","y":"7r8haXG10Nw"},{"c":"eps","t":"Promenade and Swivel","y":"WGnmSRucH-4"}]},{"name":"Three Step Promenade","items":[{"c":"ets","t":"Three Step Promenade (Pointing Version)","y":"Wxy99ymhjoQ"},{"c":"etc","t":"Three Step Promenade (Closing Version)","y":"KQIkpzlG-Bw"},{"c":"eta","t":"Three Step Promenade (Pointing and Closing Version)","y":"MMGAzNfRDUs"},{"c":"etw","t":"Three Step Promenade (Twisting Version)","y":"dMP-IHU_nTU"},{"c":"etm","t":"Three Step Promenade (Stamping Version)","y":"Wo6Jz4uSi-U"}]},{"name":"La Rueda","items":[{"c":"eru","t":"Rueda","y":"9gFFd0BM7OI"},{"c":"erc","t":"Rueda (Follow's Chassé)","y":"ssHEsQ1bgkk"},{"c":"err","t":"Rueda (Follow's Crossing Chassé)","y":"Xf4DvOAdnAU"},{"c":"erg","t":"Rueda (Go and Return)","y":"IqtR-K9gryo"},{"c":"erf","t":"Rueda (Follow's Pivot)","y":"S3LmIpkooPc"}]},{"name":"Media Lunas","items":[{"c":"ema","t":"Media Luna A (Box)","y":"l8fIDIMmbAQ"},{"c":"eml","t":"Media Luna A (Box, SQQ Version)","y":"408rqspljJE"},{"c":"eme","t":"Media Luna A (Box, Extended Version)","y":"UK-IOBKUjvc"},{"c":"emt","t":"Media Luna B (Stamps)","y":"xubSYWR2sAU"},{"c":"emc","t":"Media Luna C (Cross and Lock)","y":"4v42bx4LWvo"},{"c":"emd","t":"Media Luna D (Sweeps)","y":"y42uNwHVwRo"},{"c":"emb","t":"Media Luna E (Balancé)","y":"JkOlFJ4xF34"},{"c":"emf","t":"Media Luna F (Forward, Close, Back)","y":"VDpZZ4Zw8Es"},{"c":"emp","t":"Media Luna G (Polka)","y":"qXQqknJUSnY"},{"c":"emm","t":"Media Luna H (The Major Luna)","y":"YErfeQ5aicA"},{"c":"epm","t":"Promenade Major Luna","y":"fApoaBYOSH0"},{"c":"emi","t":"Media Luna I (Crossing Diamond)","y":"KifKAgSwcKQ"}]},{"name":"Tango Waltzes","items":[{"c":"esw","t":"Slow Waltz","y":"_gjAkizqlmM"},{"c":"ewc","t":"Waltz Corte","y":"bx4Mtj8hJ1c"},{"c":"ett","t":"Turning Two Step","y":"ujybgV2Rak4"},{"c":"ele","t":"L'Eventail","y":"SgcMst8Sg_k"},{"c":"etw","t":"Tango Waltz","y":"dMP-IHU_nTU"},{"c":"ees","t":"The Eight Step","y":"SKtTl601li0"},{"c":"eeb","t":"The Eight Step (Backing Version)","y":"nyCgj8Z4-2c"},{"c":"eec","t":"El Charron","y":"hPGeTZh36yk"},{"c":"ees","t":"The Eight Step (Sixteen Count Version)","y":"SKtTl601li0"},{"c":"epb","t":"Pivot from Back the Follow to Back the Lead)","y":"PuP10iXSk-A"},{"c":"eps","t":"Single Pivot","y":"WGnmSRucH-4"},{"c":"epd","t":"Double Pivot","y":"YhzV95mR7i0"},{"c":"egp","t":"Grapevine Pivots","y":"-O6j3pvgaXI"}]},{"name":"Grapevines & Other Crosses","items":[{"c":"egr","t":"Grapevine (Right in Front)","y":"BjWZ1xw6dWg"},{"c":"egb","t":"Grapevine (Right Behind)","y":"uTj3ErxakAg"},{"c":"edg","t":"Figura del Ebrio (Drunken Grapevine)","y":"wMXvp7yqwXM"},{"c":"evo","t":"Volteo","y":"Q8ZJXDnefHU"},{"c":"elc","t":"La Cruz","y":"dL3Erubly6g"}]},{"name":"Chassés","items":[{"c":"edr","t":"The Draw","y":"iwIqhCaoBNs"},{"c":"ech","t":"Tango Chassé","y":"Kvgx6Sy4XU0"},{"c":"ecr","t":"Tango Chassé (Cross Step First)","y":"E-ub9k8emwE"},{"c":"eck","t":"Tango Chassé (Backing Version)","y":"oB6xIfQAQe0"},{"c":"enu","t":"The Nip Up","y":"d0GX8_RZA8E"}]},{"name":"Floorplay","items":[{"c":"eft","t":"The Tapping Figure","y":"0v1UhS6TMiU"},{"c":"efc","t":"The Tapping Figure (in Closed Position)","y":"UhGFGOqN2w4"},{"c":"efn","t":"The Tapping Figure (in Closed Position, Slow Version)","y":"4wkWz_3Sm-c"},{"c":"efm","t":"Mazurka Figure","y":"8jYtNB4YEAs"},{"c":"efb","t":"Paso Oblico","y":"HsLLlG09-MI"},{"c":"efk","t":"Paso Oblico (Knee In, Knee Out)","y":"Vzvm0E4NDxQ"},{"c":"efh","t":"Paso Oblico (Point and Chassé)","y":"HTEICF9J90A"},{"c":"efw","t":"Paso Oblico (Point and Two Step)","y":"i1IDvAW9QXo"},{"c":"efv","t":"The Seven Step","y":"68oiwy0rhMQ"},{"c":"efr","t":"The Screw Figure","y":"l2Rj_jrG4xA"},{"c":"efg","t":"Walk and Swing","y":"INNR4XuBo-k"},{"c":"efp","t":"El Golpeado","y":"AD_wR1DIgbM"},{"c":"efe","t":"Preliminary Heel Rap","y":"rMr9CVqPVyM"},{"c":"eff","t":"El Frotado","y":"8AcA7WdkMVE"},{"c":"efy","t":"Preliminary Frotado","y":"IQltAUlNQ9c"},{"c":"efi","t":"La Criolla","y":"zKf3I93hl8U"}]},{"name":"Rocking Steps","items":[{"c":"eks","t":"Single Hesitation","y":"BQLYPXb5XWU"},{"c":"ekr","t":"Rocking Turn (to the Right)","y":"9MvzI06byO4"},{"c":"ekl","t":"Rocking Turn (to the Left)","y":"l0y5yuG2Tns"},{"c":"ekm","t":"Molinete","y":"fzCl-cDzG94"},{"c":"ekd","t":"Double Hesitation","y":"IB3kcPVy6ws"}]},{"name":"Lunges and Dips","items":[{"c":"elb","t":"The Bend Step","y":"qblU_oDsz6U"},{"c":"elp","t":"Promenade and Lunge","y":"QfYJ80_KgLw"},{"c":"edp","t":"Dip","y":"fb792JB4t_M"}]},{"name":"Changing the Feet","items":[{"c":"ebr","t":"Changing Feet with a Bend and Rock","y":"Fwa10Dm4Js0"},{"c":"ehp","t":"Changing Feet by Holding in Place","y":"RwfNc4qkygY"},{"c":"eeq","t":"Changing Feet with an Extra Quick Step","y":"MyzY9AVpFLM"},{"c":"ehb","t":"Changing Feet with Half of a Box","y":"IdtycMfR_3w"},{"c":"etb","t":"Traveling Box (with Collected Feet)","y":"UKMOsgIEd9U"}]},{"name":"Fantasies on the Tango","items":[{"c":"ein","t":"Innovation","y":"QMbFVNHJjts"},{"c":"esk","t":"Skaters' Position","y":"aTTpxJG8pvI"}]}]},{"name":"Post-War Tango","subs":[{"name":"1920s English Tango Sequences","items":[{"c":"bre","t":"Royal Empress Tango (1922)","y":"rVg59PcbZ-Y"},{"c":"blo","t":"Lola Tango (1923)","y":"_DnXiB-zBuk"},{"c":"bst","t":"Square Tango (1924)","y":"tvZiKkxNqtM"}]},{"name":"1920s American Tango","items":[{"c":"mwa","t":"The Tango Walk or Promenade","y":"QcAYZEOx2r4"},{"c":"mco","t":"The Cortez","y":"n0IUk4fnDCU"},{"c":"mca","t":"The Chasse","y":"T4DxBYd4lLY"},{"c":"mel","t":"The El Sharon","y":"D7sEUf9encc"},{"c":"msc","t":"The Single Cortez","y":"taFmDkTDSUc"}]},{"name":"1930s American Tango","items":[{"c":"mpr","t":"The Tango Promenade","y":"SdW5c5zdZQs"},{"c":"mch","t":"The Chasé","y":"irn4031d-uU"},{"c":"mct","t":"The Corté","y":"cZhDbdUbZNs"},{"c":"msh","t":"El Sharon","y":"M0EuefdiEeM"},{"c":"mms","t":"Arthur Murray's Tango Step","y":"524-W9AWZi0"}]}]}]};
+
+/* ---- flat ordered list of videos ---- */
+const flat = [];
+const byCode = {};
+for (const sec of DATA.sections)
+  for (const sub of sec.subs)
+    for (const it of sub.items) {
+      if (byCode[it.c]) continue;
+      const entry = { ...it, sec: sec.name, sub: sub.name, idx: flat.length };
+      flat.push(entry); byCode[it.c] = entry;
+    }
+
+/* ---- build sidebar ---- */
+const nav = document.getElementById('nav');
+function buildSection(name, entries, open) {
+  const d = document.createElement('details');
+  d.className = 'sec'; d.open = open;
+  const s = document.createElement('summary');
+  s.textContent = name; d.appendChild(s);
+  let lastSub = null;
+  for (const e of entries) {
+    if (e.sub && e.sub !== lastSub) {
+      const h = document.createElement('div');
+      h.className = 'subhead'; h.textContent = e.sub;
+      h.dataset.sub = '1'; d.appendChild(h);
+      lastSub = e.sub;
+    }
+    const b = document.createElement('button');
+    b.className = 'item'; b.textContent = e.t;
+    b.dataset.code = e.c;
+    b.addEventListener('click', () => select(e.c, true));
+    d.appendChild(b);
+  }
+  nav.appendChild(d);
+}
+buildSection('★ Favoritos de la biblioteca',
+  DATA.favs.map(c => byCode[c]).filter(Boolean).map(e => ({ ...e, sub: '' })), true);
+for (const sec of DATA.sections) {
+  const entries = [];
+  for (const sub of sec.subs) for (const it of sub.items) entries.push({ ...byCode[it.c], sub: sub.name });
+  buildSection(sec.name, entries, false);
+}
+
+/* ---- search filter ---- */
+const searchBox = document.getElementById('search');
+searchBox.addEventListener('input', () => {
+  const q = searchBox.value.trim().toLowerCase();
+  for (const d of nav.querySelectorAll('details.sec')) {
+    let any = false;
+    for (const b of d.querySelectorAll('button.item')) {
+      const hit = !q || b.textContent.toLowerCase().includes(q);
+      b.classList.toggle('hidden', !hit);
+      if (hit) any = true;
+    }
+    for (const h of d.querySelectorAll('.subhead')) {
+      let sib = h.nextElementSibling, show = false;
+      while (sib && !sib.dataset.sub) {
+        if (!sib.classList.contains('hidden')) { show = true; break; }
+        sib = sib.nextElementSibling;
+      }
+      h.classList.toggle('hidden', !show);
+    }
+    d.classList.toggle('hidden', !any);
+    if (q) d.open = true;
+  }
+});
+
+/* ---- player ---- */
+let player = null, ready = false, current = null;
+let loop = localStorage.getItem('lod-loop') === '1';
+let rate = 1;
+
+window.onYouTubeIframeAPIReady = function () {
+  const start = byCode[localStorage.getItem('lod-last')] || flat[0];
+  player = new YT.Player('player', {
+    videoId: start.y,
+    playerVars: { rel: 0, modestbranding: 1 },
+    events: {
+      onReady: () => { ready = true; applyState(start); },
+      onStateChange: (ev) => {
+        if (ev.data === YT.PlayerState.ENDED && loop) {
+          player.seekTo(0, true); player.playVideo();
+        }
+      }
+    }
+  });
+};
+
+function applyState(entry) {
+  current = entry;
+  document.getElementById('crumb').textContent =
+    entry.sec + (entry.sub ? ' · ' + entry.sub : '');
+  document.getElementById('vtitle').textContent = entry.t;
+  document.getElementById('links').innerHTML =
+    'Página original: <a href="https://www.libraryofdance.org/dances/tango/' + entry.c +
+    '/" target="_blank" rel="noopener">libraryofdance.org/dances/tango/' + entry.c + '/</a>' +
+    ' &nbsp;·&nbsp; <a href="https://www.youtube.com/watch?v=' + entry.y +
+    '" target="_blank" rel="noopener">ver en YouTube</a>';
+  for (const b of nav.querySelectorAll('button.item'))
+    b.classList.toggle('active', b.dataset.code === entry.c);
+  localStorage.setItem('lod-last', entry.c);
+}
+
+let fallbackMode = false;
+function fallbackSrc(entry, autoplay) {
+  return 'https://www.youtube.com/embed/' + entry.y + '?rel=0' +
+    (autoplay ? '&autoplay=1' : '') +
+    (loop ? '&loop=1&playlist=' + entry.y : '');
+}
+function fallbackLoad(entry, autoplay) {
+  document.getElementById('frame-wrap').innerHTML =
+    '<iframe src="' + fallbackSrc(entry, autoplay) +
+    '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+}
+
+function select(code, play) {
+  const entry = byCode[code];
+  if (!entry) return;
+  applyState(entry);
+  if (fallbackMode) fallbackLoad(entry, play);
+  else if (ready) {
+    if (play) player.loadVideoById(entry.y); else player.cueVideoById(entry.y);
+    player.setPlaybackRate(rate);
+  }
+  const active = nav.querySelector('button.item.active');
+  if (active) active.scrollIntoView({ block: 'nearest' });
+}
+
+/* ---- controls ---- */
+const loopBtn = document.getElementById('btn-loop');
+function renderLoop() { loopBtn.classList.toggle('on', loop); }
+renderLoop();
+
+document.getElementById('btn-restart').addEventListener('click', restart);
+function restart() {
+  if (fallbackMode) { if (current) fallbackLoad(current, true); }
+  else if (ready) { player.seekTo(0, true); player.playVideo(); }
+}
+
+loopBtn.addEventListener('click', () => {
+  loop = !loop; renderLoop();
+  localStorage.setItem('lod-loop', loop ? '1' : '0');
+  if (fallbackMode && current) fallbackLoad(current, false);
+});
+
+document.getElementById('speed').addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-rate]');
+  if (!b) return;
+  rate = parseFloat(b.dataset.rate);
+  if (ready) player.setPlaybackRate(rate);
+  for (const x of document.querySelectorAll('#speed .btn')) x.classList.toggle('on', x === b);
+});
+
+function step(delta) {
+  if (!current) return;
+  const next = flat[(current.idx + delta + flat.length) % flat.length];
+  select(next.c, true);
+}
+document.getElementById('btn-prev').addEventListener('click', () => step(-1));
+document.getElementById('btn-next').addEventListener('click', () => step(1));
+
+/* ---- keyboard ---- */
+document.addEventListener('keydown', (ev) => {
+  if (ev.target === searchBox) {
+    if (ev.key === 'Escape') searchBox.blur();
+    return;
+  }
+  if (ev.key === ' ') {
+    ev.preventDefault();
+    if (ready) {
+      const st = player.getPlayerState();
+      st === YT.PlayerState.PLAYING ? player.pauseVideo() : player.playVideo();
+    }
+  }
+  else if (ev.key === 'r' || ev.key === 'R') restart();
+  else if (ev.key === 'l' || ev.key === 'L') loopBtn.click();
+  else if (ev.key === 'ArrowLeft') step(-1);
+  else if (ev.key === 'ArrowRight') step(1);
+  else if (ev.key === '/') { ev.preventDefault(); searchBox.focus(); }
+});
+
+/* ---- initial UI before API loads ---- */
+applyState(byCode[localStorage.getItem('lod-last')] || flat[0]);
+
+/* ---- load YouTube IFrame API; fallback to plain iframe if blocked ---- */
+const tag = document.createElement('script');
+tag.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(tag);
+setTimeout(() => {
+  if (!ready && (!window.YT || !window.YT.Player)) {
+    fallbackMode = true;
+    document.getElementById('speed').style.display = 'none';
+    fallbackLoad(current || flat[0], false);
+  }
+}, 6000);
+</script>
+</body>
+</html>
