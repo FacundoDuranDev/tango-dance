@@ -130,6 +130,11 @@
       <button class="btn" id="btn-loop" title="Repetir al terminar (L)">🔁 Bucle</button>
       <button class="btn" id="btn-mirror" title="Invertir el video horizontalmente (M)">🪞 Espejo</button>
       <button class="btn hidden" id="btn-anno" title="Flechas y guías sobre el video (A)">✏️ Guías</button>
+      <div class="grp" id="ab" title="Bucle entre dos puntos: marcá inicio y fin con el video andando">
+        <button class="btn" id="btn-ab-a" title="Marcar inicio del tramo (I)">A: —</button>
+        <button class="btn" id="btn-ab-b" title="Marcar fin del tramo (O)">B: —</button>
+        <button class="btn" id="btn-ab-x" title="Quitar bucle A–B (X)">✕</button>
+      </div>
       <div class="grp" id="speed" title="Velocidad de reproducción">
         <button class="btn" data-rate="0.25">0.25×</button>
         <button class="btn" data-rate="0.5">0.5×</button>
@@ -142,7 +147,7 @@
     </div>
     <div id="links"></div>
     <div id="keys">
-      Atajos: <kbd>Espacio</kbd> pausa · <kbd>R</kbd> reiniciar · <kbd>L</kbd> bucle · <kbd>M</kbd> espejo · <kbd>A</kbd> guías · <kbd>←</kbd>/<kbd>→</kbd> anterior/siguiente · <kbd>/</kbd> buscar
+      Atajos: <kbd>Espacio</kbd> pausa · <kbd>R</kbd> reiniciar · <kbd>L</kbd> bucle · <kbd>M</kbd> espejo · <kbd>A</kbd> guías · <kbd>I</kbd>/<kbd>O</kbd>/<kbd>X</kbd> bucle A–B · <kbd>←</kbd>/<kbd>→</kbd> anterior/siguiente · <kbd>/</kbd> buscar
     </div>
   </div>
 </main>
@@ -272,6 +277,7 @@ function fallbackLoad(entry, autoplay) {
 function select(code, play) {
   const entry = byCode[code];
   if (!entry) return;
+  clearAB();
   applyState(entry);
   if (fallbackMode) fallbackLoad(entry, play);
   else if (ready) {
@@ -288,9 +294,16 @@ let loopTimer = null;
 function startLoopWatch() {
   if (loopTimer) return;
   loopTimer = setInterval(() => {
-    if (!loop || !ready) return;
+    if (!ready) return;
+    const ct = player.getCurrentTime();
+    // A-B segment loop takes priority over the full-video loop
+    if (abA != null && abB != null) {
+      if (ct >= abB) player.seekTo(abA, true);
+      return;
+    }
+    if (!loop) return;
     const d = player.getDuration();
-    if (d > 1 && player.getCurrentTime() >= d - 0.25) {
+    if (d > 1 && ct >= d - 0.25) {
       player.seekTo(0, true);
     }
   }, 60);
@@ -307,7 +320,10 @@ renderLoop();
 document.getElementById('btn-restart').addEventListener('click', restart);
 function restart() {
   if (fallbackMode) { if (current) fallbackLoad(current, true); }
-  else if (ready) { player.seekTo(0, true); player.playVideo(); }
+  else if (ready) {
+    player.seekTo(abA != null && abB != null ? abA : 0, true);
+    player.playVideo();
+  }
 }
 
 loopBtn.addEventListener('click', () => {
@@ -315,6 +331,41 @@ loopBtn.addEventListener('click', () => {
   localStorage.setItem('lod-loop', loop ? '1' : '0');
   if (fallbackMode && current) fallbackLoad(current, false);
 });
+
+/* ---- A-B segment loop ---- */
+let abA = null, abB = null;
+const abABtn = document.getElementById('btn-ab-a');
+const abBBtn = document.getElementById('btn-ab-b');
+function fmtT(s) {
+  const m = Math.floor(s / 60), r = s - m * 60;
+  return m + ':' + (r < 10 ? '0' : '') + r.toFixed(1);
+}
+function renderAB() {
+  abABtn.textContent = abA == null ? 'A: —' : 'A: ' + fmtT(abA);
+  abBBtn.textContent = abB == null ? 'B: —' : 'B: ' + fmtT(abB);
+  const active = abA != null && abB != null;
+  abABtn.classList.toggle('on', active);
+  abBBtn.classList.toggle('on', active);
+}
+function setAB(which) {
+  if (!ready || fallbackMode) return;
+  const ct = player.getCurrentTime();
+  if (which === 'a') { abA = ct; if (abB != null && abB <= abA) abB = null; }
+  else {
+    abB = ct;
+    if (abA == null) abA = 0;
+    if (abB <= abA) { abA = null; abB = null; }  // marca inválida: reset
+    else { player.seekTo(abA, true); player.playVideo(); }
+  }
+  renderAB();
+}
+function clearAB(skipRender) {
+  abA = null; abB = null;
+  if (!skipRender) renderAB();
+}
+abABtn.addEventListener('click', () => setAB('a'));
+abBBtn.addEventListener('click', () => setAB('b'));
+document.getElementById('btn-ab-x').addEventListener('click', () => clearAB());
 
 /* ---- mirror mode ---- */
 const mirrorBtn = document.getElementById('btn-mirror');
@@ -495,6 +546,9 @@ document.addEventListener('keydown', (ev) => {
   else if (ev.key === 'l' || ev.key === 'L') loopBtn.click();
   else if (ev.key === 'm' || ev.key === 'M') mirrorBtn.click();
   else if (ev.key === 'a' || ev.key === 'A') { if (!annoBtn.classList.contains('hidden')) annoBtn.click(); }
+  else if (ev.key === 'i' || ev.key === 'I') setAB('a');
+  else if (ev.key === 'o' || ev.key === 'O') setAB('b');
+  else if (ev.key === 'x' || ev.key === 'X') clearAB();
   else if (ev.key === 'ArrowLeft') step(-1);
   else if (ev.key === 'ArrowRight') step(1);
   else if (ev.key === '/') { ev.preventDefault(); searchBox.focus(); }
