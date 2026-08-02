@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tango — Library of Dance (visor)</title>
+<style>
+  :root {
+    --bg: #12100e;
+    --panel: #1c1917;
+    --panel2: #262220;
+    --line: #3a332f;
+    --text: #ede7e0;
+    --muted: #a89f95;
+    --accent: #e0a04a;
+    --accent-soft: rgba(224,160,74,.14);
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex; overflow: hidden;
+  }
+  /* ---------- Sidebar ---------- */
+  #sidebar {
+    width: 330px; min-width: 330px; height: 100vh; overflow-y: auto;
+    background: var(--panel); border-right: 1px solid var(--line);
+    padding: 14px; scrollbar-width: thin;
+  }
+  #sidebar h1 { font-size: 17px; margin: 2px 0 2px; }
+  #sidebar .src { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  #sidebar .src a { color: var(--muted); }
+  #search {
+    width: 100%; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--panel2); color: var(--text);
+    font-size: 14px; margin-bottom: 12px;
+  }
+  #search:focus { outline: 1px solid var(--accent); }
+  details.sec { margin-bottom: 6px; }
+  details.sec > summary {
+    cursor: pointer; font-weight: 600; font-size: 14px; padding: 7px 8px;
+    border-radius: 8px; list-style: none; user-select: none;
+  }
+  details.sec > summary::before { content: "▸ "; color: var(--accent); }
+  details.sec[open] > summary::before { content: "▾ "; }
+  details.sec > summary:hover { background: var(--panel2); }
+  .subhead {
+    font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); margin: 10px 4px 3px 14px;
+  }
+  button.item {
+    display: block; width: 100%; text-align: left; border: 0; background: none;
+    color: var(--text); font: inherit; font-size: 13.5px; cursor: pointer;
+    padding: 5px 8px 5px 22px; border-radius: 7px;
+  }
+  button.item:hover { background: var(--panel2); }
+  button.item.active { background: var(--accent-soft); color: var(--accent); }
+  .hidden { display: none !important; }
+  /* ---------- Main ---------- */
+  #main {
+    flex: 1; height: 100vh; overflow-y: auto;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 22px 28px 40px;
+  }
+  #stage { width: 100%; max-width: 1150px; }
+  #crumb { font-size: 13px; color: var(--muted); margin-bottom: 2px; min-height: 18px; }
+  #vtitle { font-size: 22px; font-weight: 650; margin: 0 0 14px; }
+  #frame-wrap {
+    position: relative; width: 100%; aspect-ratio: 16 / 9;
+    background: #000; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.5);
+  }
+  #frame-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  #frame-wrap.mirrored iframe, #frame-wrap.mirrored #overlay { transform: scaleX(-1); }
+  #overlay {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 2;
+  }
+  /* ---------- Controls ---------- */
+  #controls {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    margin-top: 14px;
+  }
+  .btn {
+    border: 1px solid var(--line); background: var(--panel2); color: var(--text);
+    font: inherit; font-size: 14px; padding: 8px 14px; border-radius: 9px;
+    cursor: pointer; user-select: none;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn.on { background: var(--accent); color: #1a1206; border-color: var(--accent); font-weight: 600; }
+  .grp { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .grp .btn { border: 0; border-radius: 0; }
+  .grp .btn + .btn { border-left: 1px solid var(--line); }
+  .spacer { flex: 1; }
+  #links { margin-top: 12px; font-size: 13px; color: var(--muted); }
+  #links a { color: var(--accent); text-decoration: none; }
+  #links a:hover { text-decoration: underline; }
+  #keys { margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+  kbd {
+    background: var(--panel2); border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 4px; padding: 0 5px; font-size: 11.5px;
+  }
+  /* ---------- Mobile ---------- */
+  #menu-toggle { display: none; }
+  @media (max-width: 800px) {
+    body { flex-direction: column; overflow: auto; }
+    #sidebar { width: 100%; min-width: 0; height: auto; max-height: 45vh; order: 2; border-right: 0; border-top: 1px solid var(--line); }
+    #main { height: auto; order: 1; padding: 14px; }
+    #vtitle { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <h1>Tango — Library of Dance</h1>
+  <div class="src">Videos de <a href="https://www.libraryofdance.org/dances/tango/" target="_blank" rel="noopener">libraryofdance.org</a></div>
+  <input id="search" type="search" placeholder="Buscar figura… (ej: ocho, gancho, corte)" autocomplete="off">
+  <div id="nav"></div>
+</nav>
+
+<main id="main">
+  <div id="stage">
+    <div id="crumb"></div>
+    <h2 id="vtitle"></h2>
+    <div id="frame-wrap"><div id="player"></div><div id="player2"></div><canvas id="overlay"></canvas></div>
+    <div id="controls">
+      <button class="btn" id="btn-restart" title="Volver al inicio (R)">⟲ Reiniciar</button>
+      <button class="btn" id="btn-loop" title="Repetir al terminar (L)">🔁 Bucle</button>
+      <button class="btn" id="btn-mirror" title="Invertir el video horizontalmente (M)">🪞 Espejo</button>
+      <button class="btn hidden" id="btn-anno" title="Flechas y guías sobre el video (A)">✏️ Guías</button>
+      <div class="grp" id="ab" title="Bucle entre dos puntos: marcá inicio y fin con el video andando">
+        <button class="btn" id="btn-ab-a" title="Marcar inicio del tramo (I)">A: —</button>
+        <button class="btn" id="btn-ab-b" title="Marcar fin del tramo (O)">B: —</button>
+        <button class="btn" id="btn-ab-x" title="Quitar bucle A–B (X)">✕</button>
+      </div>
+      <div class="grp" id="speed" title="Velocidad de reproducción">
+        <button class="btn" data-rate="0.25">0.25×</button>
+        <button class="btn" data-rate="0.5">0.5×</button>
+        <button class="btn" data-rate="0.75">0.75×</button>
+        <button class="btn on" data-rate="1">1×</button>
+      </div>
+      <span class="spacer"></span>
+      <button class="btn" id="btn-prev" title="Video anterior (←)">◀ Anterior</button>
+      <button class="btn" id="btn-next" title="Video siguiente (→)">Siguiente ▶</button>
+    </div>
+    <div id="links"></div>
+    <div id="keys">
+      Atajos: <kbd>Espacio</kbd> pausa · <kbd>R</kbd> reiniciar · <kbd>L</kbd> bucle · <kbd>M</kbd> espejo · <kbd>A</kbd> guías · <kbd>I</kbd>/<kbd>O</kbd>/<kbd>X</kbd> bucle A–B · <kbd>←</kbd>/<kbd>→</kbd> anterior/siguiente · <kbd>/</kbd> buscar
+    </div>
+  </div>
+</main>
+
+<script>
+const DATA = __DATA__;
+
+/* ---- flat ordered list of videos ---- */
+const flat = [];
+const byCode = {};
+for (const sec of DATA.sections)
+  for (const sub of sec.subs)
+    for (const it of sub.items) {
+      if (byCode[it.c]) continue;
+      const entry = { ...it, sec: sec.name, sub: sub.name, idx: flat.length };
+      flat.push(entry); byCode[it.c] = entry;
+    }
+
+/* ---- build sidebar ---- */
+const nav = document.getElementById('nav');
+function buildSection(name, entries, open) {
+  const d = document.createElement('details');
+  d.className = 'sec'; d.open = open;
+  const s = document.createElement('summary');
+  s.textContent = name; d.appendChild(s);
+  let lastSub = null;
+  for (const e of entries) {
+    if (e.sub && e.sub !== lastSub) {
+      const h = document.createElement('div');
+      h.className = 'subhead'; h.textContent = e.sub;
+      h.dataset.sub = '1'; d.appendChild(h);
+      lastSub = e.sub;
+    }
+    const b = document.createElement('button');
+    b.className = 'item'; b.textContent = e.t;
+    b.dataset.code = e.c;
+    b.dataset.q = (e.t + ' ' + (e.e || '')).toLowerCase();
+    b.addEventListener('click', () => select(e.c, true));
+    d.appendChild(b);
+  }
+  nav.appendChild(d);
+}
+buildSection('★ Favoritos de la biblioteca',
+  DATA.favs.map(c => byCode[c]).filter(Boolean).map(e => ({ ...e, sub: '' })), true);
+for (const sec of DATA.sections) {
+  const entries = [];
+  for (const sub of sec.subs) for (const it of sub.items) entries.push({ ...byCode[it.c], sub: sub.name });
+  buildSection(sec.name, entries, false);
+}
+
+/* ---- search filter ---- */
+const searchBox = document.getElementById('search');
+searchBox.addEventListener('input', () => {
+  const q = searchBox.value.trim().toLowerCase();
+  for (const d of nav.querySelectorAll('details.sec')) {
+    let any = false;
+    for (const b of d.querySelectorAll('button.item')) {
+      const hit = !q || b.dataset.q.includes(q);
+      b.classList.toggle('hidden', !hit);
+      if (hit) any = true;
+    }
+    for (const h of d.querySelectorAll('.subhead')) {
+      let sib = h.nextElementSibling, show = false;
+      while (sib && !sib.dataset.sub) {
+        if (!sib.classList.contains('hidden')) { show = true; break; }
+        sib = sib.nextElementSibling;
+      }
+      h.classList.toggle('hidden', !show);
+    }
+    d.classList.toggle('hidden', !any);
+    if (q) d.open = true;
+  }
+});
+
+/* ---- player ---- */
+let player = null, alt = null, ready = false, current = null;
+let loop = localStorage.getItem('lod-loop') === '1';
+let rate = 1;
+// standby (double-buffer) state: a second hidden, muted player pre-seeked to
+// the loop point so the jump is an instant swap instead of a re-buffering seek
+let altReady = false, altPreparing = false, altTarget = -1, altVideo = null, prepTimer = null;
+
+function loopTarget() { return (abA != null && abB != null) ? abA : 0; }
+
+window.onYouTubeIframeAPIReady = function () {
+  const start = byCode[localStorage.getItem('lod-last')] || flat[0];
+  const opts = (onReady) => ({
+    videoId: start.y,
+    playerVars: { rel: 0, modestbranding: 1 },
+    events: { onReady, onStateChange: stateChange }
+  });
+  player = new YT.Player('player', opts(() => {
+    ready = true; applyState(start); startLoopWatch();
+  }));
+  alt = new YT.Player('player2', opts((ev) => {
+    ev.target.getIframe().style.visibility = 'hidden';
+    ev.target.mute();
+  }));
+};
+
+function stateChange(ev) {
+  if (ev.target === alt) {
+    // standby finished pre-loading: freeze it at the loop point
+    if (altPreparing && ev.data === YT.PlayerState.PLAYING) {
+      alt.pauseVideo(); alt.seekTo(altTarget, true);
+      altPreparing = false; altReady = true;
+    }
+    return;
+  }
+  // last-resort fallback if the watcher missed the cut
+  if (ev.data === YT.PlayerState.ENDED && loop && abB == null) {
+    player.seekTo(0, true); player.playVideo();
+  }
+  if (ev.data === YT.PlayerState.PLAYING) schedulePrepare();
+}
+
+function schedulePrepare() {
+  clearTimeout(prepTimer);
+  prepTimer = setTimeout(prepareStandby, 700);
+}
+
+function prepareStandby() {
+  if (!ready || fallbackMode || !alt || !current) return;
+  const target = loopTarget();
+  if (altReady && altVideo === current.y && Math.abs(altTarget - target) < 0.3) return;
+  altReady = false; altPreparing = true;
+  altTarget = target; altVideo = current.y;
+  alt.mute();
+  alt.loadVideoById({ videoId: current.y, startSeconds: target });
+}
+
+function jump(target) {
+  if (altReady && current && altVideo === current.y && Math.abs(altTarget - target) < 0.3) {
+    altReady = false;
+    alt.unMute(); alt.setPlaybackRate(rate); alt.playVideo();
+    alt.getIframe().style.visibility = 'visible';
+    player.getIframe().style.visibility = 'hidden';
+    const old = player; player = alt; alt = old;
+    alt.mute(); alt.pauseVideo();
+  } else {
+    player.seekTo(target, true);
+  }
+  schedulePrepare();
+}
+
+function applyState(entry) {
+  current = entry;
+  document.getElementById('crumb').textContent =
+    entry.sec + (entry.sub ? ' · ' + entry.sub : '');
+  document.getElementById('vtitle').textContent = entry.t;
+  document.getElementById('links').innerHTML =
+    'Página original: <a href="https://www.libraryofdance.org/dances/tango/' + entry.c +
+    '/" target="_blank" rel="noopener">libraryofdance.org/dances/tango/' + entry.c + '/</a>' +
+    ' &nbsp;·&nbsp; <a href="https://www.youtube.com/watch?v=' + entry.y +
+    '" target="_blank" rel="noopener">ver en YouTube</a>';
+  for (const b of nav.querySelectorAll('button.item'))
+    b.classList.toggle('active', b.dataset.code === entry.c);
+  localStorage.setItem('lod-last', entry.c);
+  if (typeof renderAnnoBtn === 'function') renderAnnoBtn();
+}
+
+let fallbackMode = false;
+function fallbackSrc(entry, autoplay) {
+  return 'https://www.youtube.com/embed/' + entry.y + '?rel=0' +
+    (autoplay ? '&autoplay=1' : '') +
+    (loop ? '&loop=1&playlist=' + entry.y : '');
+}
+function fallbackLoad(entry, autoplay) {
+  document.getElementById('frame-wrap').innerHTML =
+    '<iframe src="' + fallbackSrc(entry, autoplay) +
+    '" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+}
+
+function select(code, play) {
+  const entry = byCode[code];
+  if (!entry) return;
+  clearAB();
+  applyState(entry);
+  if (fallbackMode) fallbackLoad(entry, play);
+  else if (ready) {
+    if (play) player.loadVideoById(entry.y); else player.cueVideoById(entry.y);
+    player.setPlaybackRate(rate);
+    altReady = false; schedulePrepare();
+  }
+  const active = nav.querySelector('button.item.active');
+  if (active) active.scrollIntoView({ block: 'nearest' });
+}
+
+/* ---- seamless loop: jump back just BEFORE the video ends, so the
+   end screen / black frame never appears ---- */
+let loopTimer = null;
+function startLoopWatch() {
+  if (loopTimer) return;
+  loopTimer = setInterval(() => {
+    if (!ready || fallbackMode) return;
+    if (player.getPlayerState() !== YT.PlayerState.PLAYING) return;
+    const ct = player.getCurrentTime();
+    // A-B segment loop takes priority over the full-video loop
+    if (abA != null && abB != null) {
+      if (ct >= abB) jump(abA);
+      return;
+    }
+    if (!loop) return;
+    const d = player.getDuration();
+    if (d > 1 && ct >= d - 0.25) jump(0);
+  }, 60);
+}
+
+/* ---- controls ---- */
+const loopBtn = document.getElementById('btn-loop');
+function renderLoop() { loopBtn.classList.toggle('on', loop); }
+renderLoop();
+
+document.getElementById('btn-restart').addEventListener('click', restart);
+function restart() {
+  if (fallbackMode) { if (current) fallbackLoad(current, true); }
+  else if (ready) {
+    player.seekTo(abA != null && abB != null ? abA : 0, true);
+    player.playVideo();
+  }
+}
+
+loopBtn.addEventListener('click', () => {
+  loop = !loop; renderLoop();
+  localStorage.setItem('lod-loop', loop ? '1' : '0');
+  if (fallbackMode && current) fallbackLoad(current, false);
+});
+
+/* ---- A-B segment loop ---- */
+let abA = null, abB = null;
+const abABtn = document.getElementById('btn-ab-a');
+const abBBtn = document.getElementById('btn-ab-b');
+function fmtT(s) {
+  const m = Math.floor(s / 60), r = s - m * 60;
+  return m + ':' + (r < 10 ? '0' : '') + r.toFixed(1);
+}
+function renderAB() {
+  abABtn.textContent = abA == null ? 'A: —' : 'A: ' + fmtT(abA);
+  abBBtn.textContent = abB == null ? 'B: —' : 'B: ' + fmtT(abB);
+  const active = abA != null && abB != null;
+  abABtn.classList.toggle('on', active);
+  abBBtn.classList.toggle('on', active);
+}
+function setAB(which) {
+  if (!ready || fallbackMode) return;
+  const ct = player.getCurrentTime();
+  if (which === 'a') { abA = ct; if (abB != null && abB <= abA) abB = null; }
+  else {
+    abB = ct;
+    if (abA == null) abA = 0;
+    if (abB <= abA) { abA = null; abB = null; }  // marca inválida: reset
+    else { player.seekTo(abA, true); player.playVideo(); }
+  }
+  renderAB();
+  schedulePrepare();
+}
+function clearAB(skipRender) {
+  abA = null; abB = null;
+  if (!skipRender) renderAB();
+  if (ready && !fallbackMode) schedulePrepare();
+}
+abABtn.addEventListener('click', () => setAB('a'));
+abBBtn.addEventListener('click', () => setAB('b'));
+document.getElementById('btn-ab-x').addEventListener('click', () => clearAB());
+
+/* ---- mirror mode ---- */
+const mirrorBtn = document.getElementById('btn-mirror');
+const frameWrap = document.getElementById('frame-wrap');
+let mirror = localStorage.getItem('lod-mirror') === '1';
+function renderMirror() {
+  frameWrap.classList.toggle('mirrored', mirror);
+  mirrorBtn.classList.toggle('on', mirror);
+}
+renderMirror();
+mirrorBtn.addEventListener('click', () => {
+  mirror = !mirror; renderMirror();
+  localStorage.setItem('lod-mirror', mirror ? '1' : '0');
+});
+
+/* ==== annotation overlay (reel-style arrows & guides) ====
+   Coordinates are normalized (0-1) over the video frame.
+   Each item: t:[start,end] seconds; fades in/out at the edges.
+   - arrow: from/to (+optional track: [[t,x],...] keyframes shifting x)
+   - arc:   c, r, a0/a1 in degrees, arrowhead at a1
+   - eight: lemniscate at c with radii rx/ry + dot cycling with period
+   - text:  p, s                                                    */
+const ANNO = {
+  awa: [
+    { type: 'text', t: [0.2, 1.4], p: [0.24, 0.30], s: 'Abrazo: pausa inicial' },
+    { type: 'trail', t: [0, 99] },
+    { type: 'text', t: [1.5, 5.0], p: [0.50, 0.14], s: 'El líder avanza — la seguidora retrocede' },
+    { type: 'text', t: [5.5, 8.2], p: [0.50, 0.14], s: 'Peso entero en cada paso, al compás' },
+  ],
+  aoc: [
+    { type: 'text', t: [0.4, 3.0], p: [0.47, 0.16], s: 'Ochos frente al líder' },
+    { type: 'trail', t: [0, 99] },
+    { type: 'text', t: [4.0, 8.0], p: [0.47, 0.16], s: 'La seguidora dibuja un 8 en el piso' },
+    { type: 'text', t: [9.0, 12.4], p: [0.47, 0.16], s: 'Pivote en cada cruce' },
+  ],
+  aga: [
+    { type: 'text', t: [0.4, 2.0], p: [0.45, 0.16], s: 'Preparación: ocho atrás' },
+    { type: 'trail', t: [0, 99] },
+    { type: 'arc', t: [2.2, 3.4], c: [0.48, 0.66], r: 0.045, a0: 100, a1: 400 },
+    { type: 'text', t: [2.2, 3.8], p: [0.45, 0.14], s: '¡Gancho! La pierna engancha por detrás' },
+    { type: 'text', t: [5.0, 7.3], p: [0.55, 0.16], s: 'Salida caminando' },
+  ],
+};
+
+/* Per-foot trails from pose detection (YOLO): [t, x, y] normalized.
+   Keys: lead_la/lead_ra (líder izq/der), follow_la/follow_ra (seguidora). */
+const TRAILS = __TRAILS__;
+const TRAIL_STYLE = {
+  lead_la: '#ffb85c', lead_ra: '#d97e1a',
+  follow_la: '#8fd0ff', follow_ra: '#2f8fe0',
+};
+const TRAIL_WINDOW = 1.4; // seconds of tail shown behind each foot
+
+const annoBtn = document.getElementById('btn-anno');
+const canvas = document.getElementById('overlay');
+const ctx = canvas.getContext('2d');
+let showAnno = localStorage.getItem('lod-anno') !== '0';
+
+function renderAnnoBtn() {
+  const has = current && ANNO[current.c];
+  annoBtn.classList.toggle('hidden', !has);
+  annoBtn.classList.toggle('on', !!has && showAnno);
+}
+annoBtn.addEventListener('click', () => {
+  showAnno = !showAnno;
+  localStorage.setItem('lod-anno', showAnno ? '1' : '0');
+  renderAnnoBtn();
+});
+// mark annotated videos in the sidebar
+for (const b of nav.querySelectorAll('button.item'))
+  if (ANNO[b.dataset.code]) b.textContent += ' ✏️';
+renderAnnoBtn();
+
+function lerpTrack(track, t) {
+  if (t <= track[0][0]) return track[0][1];
+  for (let i = 1; i < track.length; i++) {
+    if (t <= track[i][0]) {
+      const [t0, v0] = track[i - 1], [t1, v1] = track[i];
+      return v0 + (v1 - v0) * (t - t0) / (t1 - t0);
+    }
+  }
+  return track[track.length - 1][1];
+}
+
+function arrowHead(x, y, angle, size) {
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x - size * Math.cos(angle - 0.44), y - size * Math.sin(angle - 0.44));
+  ctx.moveTo(x, y);
+  ctx.lineTo(x - size * Math.cos(angle + 0.44), y - size * Math.sin(angle + 0.44));
+  ctx.stroke();
+}
+
+function drawAnno(t) {
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  const list = (showAnno && current && ANNO[current.c]) || [];
+  const lw = Math.max(2, w / 320);
+  for (const a of list) {
+    const [t0, t1] = a.t;
+    if (t < t0 || t > t1) continue;
+    const alpha = Math.min(1, (t - t0) / 0.3, (t1 - t) / 0.3);
+    ctx.globalAlpha = Math.max(0, alpha);
+    ctx.strokeStyle = ctx.fillStyle = '#fff';
+    ctx.lineWidth = lw;
+    ctx.shadowColor = 'rgba(0,0,0,.75)'; ctx.shadowBlur = lw * 2;
+    if (a.type === 'arrow') {
+      const dx = a.track ? lerpTrack(a.track, t) : 0;
+      const x1 = (a.from[0] + dx) * w, y1 = a.from[1] * h;
+      const x2 = (a.to[0] + dx) * w, y2 = a.to[1] * h;
+      ctx.setLineDash(a.dash ? [lw * 3, lw * 3] : []);
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.setLineDash([]);
+      arrowHead(x2, y2, Math.atan2(y2 - y1, x2 - x1), lw * 5);
+    } else if (a.type === 'arc') {
+      const cx = a.c[0] * w, cy = a.c[1] * h, r = a.r * w;
+      const a0 = a.a0 * Math.PI / 180, a1 = a.a1 * Math.PI / 180;
+      ctx.beginPath(); ctx.arc(cx, cy, r, a0, a1); ctx.stroke();
+      arrowHead(cx + r * Math.cos(a1), cy + r * Math.sin(a1), a1 + Math.PI / 2, lw * 5);
+    } else if (a.type === 'eight') {
+      const cx = a.c[0] * w, cy = a.c[1] * h, rx = a.rx * w, ry = a.ry * h * 4;
+      ctx.setLineDash([lw * 2, lw * 2]);
+      ctx.beginPath();
+      for (let i = 0; i <= 100; i++) {
+        const u = i / 100 * 2 * Math.PI;
+        const px = cx + rx * Math.sin(u), py = cy + ry * Math.sin(u) * Math.cos(u);
+        i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+      }
+      ctx.closePath(); ctx.stroke(); ctx.setLineDash([]);
+      const u = (t - a.t[0]) / a.period * 2 * Math.PI;
+      ctx.beginPath();
+      ctx.arc(cx + rx * Math.sin(u), cy + ry * Math.sin(u) * Math.cos(u), lw * 2.2, 0, 7);
+      ctx.fill();
+    } else if (a.type === 'trail') {
+      const feet = TRAILS[current.c];
+      if (!feet) continue;
+      for (const [key, pts] of Object.entries(feet)) {
+        ctx.strokeStyle = ctx.fillStyle = TRAIL_STYLE[key] || '#fff';
+        const seg = pts.filter(p => p[0] <= t && p[0] >= t - TRAIL_WINDOW);
+        if (seg.length > 1) {
+          for (let i = 1; i < seg.length; i++) {
+            if (seg[i][0] - seg[i - 1][0] > 0.6) continue;  // detection gap: don't bridge
+            ctx.globalAlpha = alpha * (0.15 + 0.85 * (i / seg.length));
+            ctx.beginPath();
+            ctx.moveTo(seg[i - 1][1] * w, seg[i - 1][2] * h);
+            ctx.lineTo(seg[i][1] * w, seg[i][2] * h);
+            ctx.stroke();
+          }
+        }
+        // dot at the current (interpolated) foot position
+        let cur = null;
+        for (let i = 1; i < pts.length; i++) {
+          if (pts[i][0] >= t) {
+            const [ta, xa, ya] = pts[i - 1], [tb, xb, yb] = pts[i];
+            if (tb - ta < 0.6) {  // no dot inside a detection gap
+              const f = tb > ta ? (t - ta) / (tb - ta) : 0;
+              cur = [xa + (xb - xa) * f, ya + (yb - ya) * f];
+            }
+            break;
+          }
+        }
+        if (cur && t <= pts[pts.length - 1][0] + 0.3) {
+          ctx.globalAlpha = alpha;
+          ctx.beginPath();
+          ctx.arc(cur[0] * w, cur[1] * h, lw * 2, 0, 7);
+          ctx.fill();
+        }
+        ctx.globalAlpha = alpha;
+      }
+      // legend
+      ctx.globalAlpha = alpha * 0.9;
+      ctx.font = `600 ${Math.max(11, w / 60)}px system-ui, sans-serif`;
+      ctx.textAlign = 'left';
+      let lx = 0.015 * w;
+      const ly = 0.045 * h, r = Math.max(3, w / 260);
+      for (const [key, label] of [['lead_la', 'líder izq'], ['lead_ra', 'der'],
+                                  ['follow_la', 'seguidora izq'], ['follow_ra', 'der']]) {
+        ctx.fillStyle = TRAIL_STYLE[key];
+        ctx.beginPath(); ctx.arc(lx + r, ly, r, 0, 7); ctx.fill();
+        ctx.fillStyle = '#fff';
+        lx += r * 2.6;
+        ctx.fillText(label, lx, ly + r * 1.4);
+        lx += ctx.measureText(label).width + r * 3.2;
+      }
+    } else if (a.type === 'text') {
+      ctx.font = `italic 600 ${Math.max(13, w / 42)}px system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(a.s, a.p[0] * w, a.p[1] * h);
+    }
+  }
+  ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+}
+
+function annoLoop() {
+  const rect = frameWrap.getBoundingClientRect();
+  if (canvas.width !== Math.round(rect.width) || canvas.height !== Math.round(rect.height)) {
+    canvas.width = Math.round(rect.width); canvas.height = Math.round(rect.height);
+  }
+  let t = -1;
+  if (ready && !fallbackMode && player.getCurrentTime) {
+    try { t = player.getCurrentTime(); } catch (e) {}
+  }
+  drawAnno(t);
+  requestAnimationFrame(annoLoop);
+}
+requestAnimationFrame(annoLoop);
+
+document.getElementById('speed').addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-rate]');
+  if (!b) return;
+  rate = parseFloat(b.dataset.rate);
+  if (ready) player.setPlaybackRate(rate);
+  for (const x of document.querySelectorAll('#speed .btn')) x.classList.toggle('on', x === b);
+});
+
+function step(delta) {
+  if (!current) return;
+  const next = flat[(current.idx + delta + flat.length) % flat.length];
+  select(next.c, true);
+}
+document.getElementById('btn-prev').addEventListener('click', () => step(-1));
+document.getElementById('btn-next').addEventListener('click', () => step(1));
+
+/* ---- keyboard ---- */
+document.addEventListener('keydown', (ev) => {
+  if (ev.target === searchBox) {
+    if (ev.key === 'Escape') searchBox.blur();
+    return;
+  }
+  if (ev.key === ' ') {
+    ev.preventDefault();
+    if (ready) {
+      const st = player.getPlayerState();
+      st === YT.PlayerState.PLAYING ? player.pauseVideo() : player.playVideo();
+    }
+  }
+  else if (ev.key === 'r' || ev.key === 'R') restart();
+  else if (ev.key === 'l' || ev.key === 'L') loopBtn.click();
+  else if (ev.key === 'm' || ev.key === 'M') mirrorBtn.click();
+  else if (ev.key === 'a' || ev.key === 'A') { if (!annoBtn.classList.contains('hidden')) annoBtn.click(); }
+  else if (ev.key === 'i' || ev.key === 'I') setAB('a');
+  else if (ev.key === 'o' || ev.key === 'O') setAB('b');
+  else if (ev.key === 'x' || ev.key === 'X') clearAB();
+  else if (ev.key === 'ArrowLeft') step(-1);
+  else if (ev.key === 'ArrowRight') step(1);
+  else if (ev.key === '/') { ev.preventDefault(); searchBox.focus(); }
+});
+
+/* ---- initial UI before API loads ---- */
+applyState(byCode[localStorage.getItem('lod-last')] || flat[0]);
+
+/* ---- load YouTube IFrame API; fallback to plain iframe if blocked ---- */
+const tag = document.createElement('script');
+tag.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(tag);
+setTimeout(() => {
+  if (!ready && (!window.YT || !window.YT.Player)) {
+    fallbackMode = true;
+    document.getElementById('speed').style.display = 'none';
+    fallbackLoad(current || flat[0], false);
+  }
+}, 6000);
+</script>
+</body>
+</html>

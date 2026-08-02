@@ -1,0 +1,1563 @@
+[
+ {
+  "name": "Modern Argentine Tango",
+  "subs": [
+   {
+    "name": "Tango Argentino",
+    "items": []
+   },
+   {
+    "name": "Walking",
+    "items": [
+     {
+      "code": "awa",
+      "title": "Walk"
+     },
+     {
+      "code": "aso",
+      "title": "Step Out"
+     },
+     {
+      "code": "acr",
+      "title": "The Cross"
+     },
+     {
+      "code": "asn",
+      "title": "Sentada"
+     },
+     {
+      "code": "ase",
+      "title": "Sentada (Back and Forth)"
+     },
+     {
+      "code": "apa",
+      "title": "Pasitos"
+     },
+     {
+      "code": "asw",
+      "title": "Syncopated Walk"
+     }
+    ]
+   },
+   {
+    "name": "Rocking",
+    "items": [
+     {
+      "code": "aha",
+      "title": "Hamaca"
+     }
+    ]
+   },
+   {
+    "name": "Ochos",
+    "items": [
+     {
+      "code": "aoc",
+      "title": "Ochos"
+     },
+     {
+      "code": "abo",
+      "title": "Back Ochos"
+     },
+     {
+      "code": "aff",
+      "title": "Ochos on the Side (from The Cross)"
+     },
+     {
+      "code": "afb",
+      "title": "Back Ochos on the Side"
+     }
+    ]
+   },
+   {
+    "name": "Barridas",
+    "items": [
+     {
+      "code": "aba",
+      "title": "Barrida"
+     }
+    ]
+   },
+   {
+    "name": "Castigadas & Ganchos",
+    "items": [
+     {
+      "code": "aca",
+      "title": "Castigada"
+     },
+     {
+      "code": "aga",
+      "title": "Gancho"
+     },
+     {
+      "code": "agb",
+      "title": "Gancho in Back Ochos on the Side"
+     }
+    ]
+   },
+   {
+    "name": "Molinetes",
+    "items": [
+     {
+      "code": "amo",
+      "title": "Molinete"
+     },
+     {
+      "code": "aml",
+      "title": "Longer Molinete"
+     }
+    ]
+   },
+   {
+    "name": "Giros",
+    "items": [
+     {
+      "code": "agg",
+      "title": "Grapevine Giro"
+     }
+    ]
+   },
+   {
+    "name": "Eight Count Basic",
+    "items": [
+     {
+      "code": "aeb",
+      "title": "Eight Count Basic"
+     },
+     {
+      "code": "aeh",
+      "title": "Hamaca in Eight Count Basic"
+     },
+     {
+      "code": "aeo",
+      "title": "Ochos in Eight Count Basic"
+     },
+     {
+      "code": "aec",
+      "title": "Castigada in Eight Count Basic"
+     },
+     {
+      "code": "aeg",
+      "title": "Gancho in Eight Count Basic"
+     },
+     {
+      "code": "asx",
+      "title": "Six Count Basic"
+     },
+     {
+      "code": "asv",
+      "title": "Seven Count Basic"
+     }
+    ]
+   },
+   {
+    "name": "Argentine Tango Mixer",
+    "items": [
+     {
+      "code": "atm",
+      "title": "Argentine Tango Mixer"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Contemporary Social Tango",
+  "subs": [
+   {
+    "name": "Fans",
+    "items": [
+     {
+      "code": "spl",
+      "title": "Promenade Left Turn Fan (Social Tango Basic)"
+     },
+     {
+      "code": "spr",
+      "title": "Promenade Right Turn Fan"
+     },
+     {
+      "code": "sts",
+      "title": "Trouble Step"
+     },
+     {
+      "code": "srl",
+      "title": "Rocking Left Turn Fan"
+     },
+     {
+      "code": "srr",
+      "title": "Rocking Right Turn Fan"
+     },
+     {
+      "code": "slg",
+      "title": "Lead's Grapevine Fan"
+     },
+     {
+      "code": "sfg",
+      "title": "Follow's Grapevine Fan"
+     },
+     {
+      "code": "sef",
+      "title": "Eight Count Fan (Side, Forward, Back)"
+     },
+     {
+      "code": "sbf",
+      "title": "Backing Fan (American Tango Basic)"
+     },
+     {
+      "code": "sbl",
+      "title": "Backing Left Turn Fan"
+     }
+    ]
+   },
+   {
+    "name": "Promenades",
+    "items": [
+     {
+      "code": "sfh",
+      "title": "Five Step Promenade (Changing Hands)"
+     },
+     {
+      "code": "sfs",
+      "title": "Five Step Promenade (Scorpion Position)"
+     },
+     {
+      "code": "sch",
+      "title": "Tango Chass\u00e9"
+     },
+     {
+      "code": "ssc",
+      "title": "Scorpion Side Steps"
+     },
+     {
+      "code": "ssl",
+      "title": "Scorpion Side Steps (Long Version)"
+     },
+     {
+      "code": "sml",
+      "title": "Promenade Media Luna"
+     },
+     {
+      "code": "srm",
+      "title": "Repeated Promenade Media Luna"
+     },
+     {
+      "code": "smf",
+      "title": "Promenade Media Luna and Five Step Promenade"
+     }
+    ]
+   },
+   {
+    "name": "Grapevines",
+    "items": [
+     {
+      "code": "sgd",
+      "title": "Grapevine with Dive Bomb Exit"
+     },
+     {
+      "code": "sgl",
+      "title": "Long Grapevine"
+     },
+     {
+      "code": "sgc",
+      "title": "Grapevine (Chass\u00e9 Timing)"
+     },
+     {
+      "code": "sgo",
+      "title": "Grapevine (Faster than the Music)"
+     },
+     {
+      "code": "sgf",
+      "title": "Grapevine (Follow Only)"
+     },
+     {
+      "code": "sdg",
+      "title": "Drunken Grapevine"
+     }
+    ]
+   },
+   {
+    "name": "Ruedas",
+    "items": [
+     {
+      "code": "sru",
+      "title": "Rueda"
+     },
+     {
+      "code": "spo",
+      "title": "Pomander Turn"
+     },
+     {
+      "code": "sgr",
+      "title": "Grapevine Rueda"
+     }
+    ]
+   },
+   {
+    "name": "Ochos",
+    "items": [
+     {
+      "code": "sso",
+      "title": "Single Ocho"
+     },
+     {
+      "code": "smo",
+      "title": "Multiple Ochos"
+     },
+     {
+      "code": "scc",
+      "title": "Counter Crossing"
+     },
+     {
+      "code": "sfo",
+      "title": "Follow's Solo"
+     },
+     {
+      "code": "sft",
+      "title": "Touches Styling"
+     },
+     {
+      "code": "sfk",
+      "title": "Kicks Styling"
+     },
+     {
+      "code": "sfw",
+      "title": "Sweeps Styling"
+     },
+     {
+      "code": "sfe",
+      "title": "Feather Stitch Styling"
+     },
+     {
+      "code": "ssw",
+      "title": "Fast Swivels Styling"
+     },
+     {
+      "code": "sla",
+      "title": "Lead's A-Frame Stance"
+     },
+     {
+      "code": "sro",
+      "title": "Promenade to Ochos"
+     }
+    ]
+   },
+   {
+    "name": "Media Lunas (Puzzle Steps)",
+    "items": [
+     {
+      "code": "sth",
+      "title": "Three Step Promenade"
+     },
+     {
+      "code": "sbo",
+      "title": "Media Luna Sanjuanina (Box Step)"
+     },
+     {
+      "code": "spu",
+      "title": "Media Luna Puntana (Rocking Box)"
+     },
+     {
+      "code": "slo",
+      "title": "Media Luna Lola (Trapezoid Box)"
+     },
+     {
+      "code": "ssa",
+      "title": "Media Luna Salsa"
+     }
+    ]
+   },
+   {
+    "name": "Rocking Steps",
+    "items": [
+     {
+      "code": "smn",
+      "title": "Rocking Molinete"
+     },
+     {
+      "code": "str",
+      "title": "Short Rocking Molinete"
+     },
+     {
+      "code": "smc",
+      "title": "Molinete (Chass\u00e9 Timing)"
+     },
+     {
+      "code": "sbr",
+      "title": "Backing Rocking Corte"
+     },
+     {
+      "code": "src",
+      "title": "Single Rocking Corte"
+     },
+     {
+      "code": "sdr",
+      "title": "Double Rocking Corte"
+     },
+     {
+      "code": "srw",
+      "title": "Rockaway Lunge"
+     },
+     {
+      "code": "srf",
+      "title": "Rockaway Lunge (Follow's Solo Version)"
+     },
+     {
+      "code": "srp",
+      "title": "Rocking Promenade (Chass\u00e9 Timing)"
+     }
+    ]
+   },
+   {
+    "name": "Pivots",
+    "items": [
+     {
+      "code": "spv",
+      "title": "Pivots (Chass\u00e9 Timing)"
+     },
+     {
+      "code": "svu",
+      "title": "Pivots and Underarm Turn"
+     }
+    ]
+   },
+   {
+    "name": "Added Styling",
+    "items": [
+     {
+      "code": "sfr",
+      "title": "Frotado"
+     },
+     {
+      "code": "ssp",
+      "title": "Lead's Shoe Polishing"
+     },
+     {
+      "code": "shr",
+      "title": "Lead's Heel Rap"
+     },
+     {
+      "code": "sat",
+      "title": "Using All the Time to Close"
+     },
+     {
+      "code": "ssi",
+      "title": "Silence"
+     }
+    ]
+   },
+   {
+    "name": "Dips & Lunges",
+    "items": [
+     {
+      "code": "sdo",
+      "title": "Side Step Dip (on 1)"
+     },
+     {
+      "code": "sdn",
+      "title": "Dipping Fan"
+     },
+     {
+      "code": "sdt",
+      "title": "Cross-Step Dip (on 3)"
+     },
+     {
+      "code": "sfd",
+      "title": "Face Loop Dip"
+     },
+     {
+      "code": "sda",
+      "title": "Dip after the Music Ends"
+     },
+     {
+      "code": "sdv",
+      "title": "Grapevine Dip"
+     },
+     {
+      "code": "ssd",
+      "title": "Counterbalanced Sit Dip"
+     },
+     {
+      "code": "sta",
+      "title": "Toss Across Dip"
+     },
+     {
+      "code": "sdf",
+      "title": "Promenade Dip (on 4)"
+     },
+     {
+      "code": "sid",
+      "title": "Inside Turn Dip"
+     },
+     {
+      "code": "sit",
+      "title": "Inside Turn Face Loop Dip"
+     },
+     {
+      "code": "spd",
+      "title": "Pivots out of a Dip"
+     },
+     {
+      "code": "sic",
+      "title": "Intensifying Rocking Corte Dip"
+     },
+     {
+      "code": "sib",
+      "title": "Intensifying Rocking Corte Dip (Counterbalanced)"
+     },
+     {
+      "code": "srd",
+      "title": "Free Spin Dip"
+     },
+     {
+      "code": "slu",
+      "title": "Promenade Lunge"
+     },
+     {
+      "code": "slt",
+      "title": "Lunge and Turning Corte"
+     },
+     {
+      "code": "sil",
+      "title": "Inside Turn Cradle Lunge"
+     }
+    ]
+   },
+   {
+    "name": "Alternate Timings",
+    "items": [
+     {
+      "code": "svl",
+      "title": "Tango Vals (Vals Cruzado)"
+     },
+     {
+      "code": "sos",
+      "title": "Fast One Step Tango"
+     }
+    ]
+   },
+   {
+    "name": "Advanced Concepts",
+    "items": [
+     {
+      "code": "snv",
+      "title": "Innovation"
+     },
+     {
+      "code": "sad",
+      "title": "\"Advanced\" Tango (Not Matching Partner)"
+     },
+     {
+      "code": "scp",
+      "title": "Role Reversal"
+     },
+     {
+      "code": "sbg",
+      "title": "Follow's Initiative - Grapevine Ochos"
+     }
+    ]
+   },
+   {
+    "name": "Sequences",
+    "items": [
+     {
+      "code": "ssf",
+      "title": "Tango Practice Sequence (Flio Tango)"
+     },
+     {
+      "code": "ssn",
+      "title": "The One Step Tango"
+     },
+     {
+      "code": "ssk",
+      "title": "The Skater's Tango"
+     },
+     {
+      "code": "sst",
+      "title": "The 2014 Tango"
+     },
+     {
+      "code": "ssr",
+      "title": "Frotado Tango"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Early Buenos Aires Tango (c. 1916)",
+  "subs": [
+   {
+    "name": "El Tango Argentino de Salon",
+    "items": []
+   },
+   {
+    "name": "Full Song Demo",
+    "items": [
+     {
+      "code": "lfs",
+      "title": "Full Song Demo"
+     }
+    ]
+   },
+   {
+    "name": "Pasos Paseos",
+    "items": [
+     {
+      "code": "lpp",
+      "title": "Pasos Paseos Serenos"
+     },
+     {
+      "code": "lpd",
+      "title": "Pasos Paseos (En Paralelas a la Derecha)"
+     },
+     {
+      "code": "lpi",
+      "title": "Pasos Paseos (En Paralelas a la Izquierda)"
+     },
+     {
+      "code": "lpa",
+      "title": "Pasos Paseos (En Paralelas de Avance)"
+     },
+     {
+      "code": "lpr",
+      "title": "Pasos Paseos (En Paralelas de Retroceso)"
+     },
+     {
+      "code": "lac",
+      "title": "Pasos Paseos Acompasados"
+     },
+     {
+      "code": "lal",
+      "title": "Pasos Paseos Alternados"
+     },
+     {
+      "code": "lps",
+      "title": "Pasitos"
+     }
+    ]
+   },
+   {
+    "name": "Saltitos",
+    "items": [
+     {
+      "code": "lso",
+      "title": "Saltito #1"
+     },
+     {
+      "code": "lsw",
+      "title": "Saltito #2"
+     },
+     {
+      "code": "lsh",
+      "title": "Saltito #3"
+     },
+     {
+      "code": "lsf",
+      "title": "Saltito #4"
+     }
+    ]
+   },
+   {
+    "name": "Cruces de P\u00edes",
+    "items": [
+     {
+      "code": "lvo",
+      "title": "Volcando El Medio y Volcando Afuera"
+     },
+     {
+      "code": "lca",
+      "title": "Cruces de P\u00edes Avanzando"
+     },
+     {
+      "code": "lrf",
+      "title": "Cruces de P\u00edes Laterales (Right in Front)"
+     },
+     {
+      "code": "lrb",
+      "title": "Cruces de P\u00edes Laterales (Right Behind)"
+     },
+     {
+      "code": "llf",
+      "title": "Cruces de P\u00edes Laterales (Left in Front)"
+     },
+     {
+      "code": "llb",
+      "title": "Cruces de P\u00edes Laterales (Left Behind)"
+     },
+     {
+      "code": "lcd",
+      "title": "Cruces de P\u00edes Laterales (Changing Direction)"
+     }
+    ]
+   },
+   {
+    "name": "Vueltas",
+    "items": [
+     {
+      "code": "lvi",
+      "title": "Vueltas (a la Izquierda)"
+     },
+     {
+      "code": "lvd",
+      "title": "Vueltas (a la Derecha)"
+     }
+    ]
+   },
+   {
+    "name": "Molinetes",
+    "items": [
+     {
+      "code": "lml",
+      "title": "Molinete (Lead as Axle)"
+     },
+     {
+      "code": "lmg",
+      "title": "Molinete (Follow's Grapevine)"
+     },
+     {
+      "code": "lmf",
+      "title": "Molinete (Follow as Axle)"
+     },
+     {
+      "code": "lmc",
+      "title": "Molinete (Circling Each Other)"
+     },
+     {
+      "code": "lms",
+      "title": "Molinete (Switching Directions)"
+     }
+    ]
+   },
+   {
+    "name": "Paso Lateral",
+    "items": [
+     {
+      "code": "lpl",
+      "title": "Paso Lateral"
+     },
+     {
+      "code": "llc",
+      "title": "Paso Lateral (Changing Directions)"
+     }
+    ]
+   },
+   {
+    "name": "Paso Pique Acompasado",
+    "items": [
+     {
+      "code": "lpq",
+      "title": "Paso Pique Acompasado"
+     },
+     {
+      "code": "lpc",
+      "title": "Paso Pique Acompasado (Corrida)"
+     }
+    ]
+   },
+   {
+    "name": "El Ocho",
+    "items": [
+     {
+      "code": "loc",
+      "title": "El Ocho"
+     },
+     {
+      "code": "lop",
+      "title": "El Ocho (En Paralelas)"
+     }
+    ]
+   },
+   {
+    "name": "Sentadas",
+    "items": [
+     {
+      "code": "lho",
+      "title": "Sentada #1 (Walk 1, Hold 1)"
+     },
+     {
+      "code": "lhw",
+      "title": "Sentada #2 (Walk 2, Hold 2)"
+     },
+     {
+      "code": "lhh",
+      "title": "Sentada #3 (Walk 3, Hold 1)"
+     },
+     {
+      "code": "lhf",
+      "title": "Sentada #4"
+     },
+     {
+      "code": "lhv",
+      "title": "Sentada #5"
+     },
+     {
+      "code": "lhx",
+      "title": "Sentada #6"
+     },
+     {
+      "code": "lhn",
+      "title": "Sentada #7"
+     },
+     {
+      "code": "lsu",
+      "title": "La Sentada Unica"
+     },
+     {
+      "code": "lua",
+      "title": "La Sentada Unica (Adapted)"
+     }
+    ]
+   },
+   {
+    "name": "Media Lunas",
+    "items": [
+     {
+      "code": "lsj",
+      "title": "Media Luna #1 - Sanjuanina"
+     },
+     {
+      "code": "lvv",
+      "title": "Media Luna #2 - Vai-Ven (a.k.a. Santiague\u00f1a)"
+     },
+     {
+      "code": "lve",
+      "title": "Media Luna #2 - Vai-Ven (Extended Version)"
+     },
+     {
+      "code": "ljj",
+      "title": "Media Luna #3 - Juje\u00f1a"
+     },
+     {
+      "code": "ldc",
+      "title": "Media Luna #4 - Doble Cuatro or Riojana"
+     },
+     {
+      "code": "lst",
+      "title": "Media Luna #5 - Salte\u00f1a"
+     },
+     {
+      "code": "len",
+      "title": "Media Luna #6 - Entrerriana"
+     },
+     {
+      "code": "lsa",
+      "title": "Media Luna #7 - Santafecina"
+     },
+     {
+      "code": "lmi",
+      "title": "Media Luna #8 - Mendocina (a la Izquierda)"
+     },
+     {
+      "code": "lmd",
+      "title": "Media Luna #8 - Mendocina (a la Derecha)"
+     },
+     {
+      "code": "ltu",
+      "title": "Media Luna #9 - Tucumana"
+     },
+     {
+      "code": "lte",
+      "title": "Media Luna #9 - Tucumana (Extended Version)"
+     },
+     {
+      "code": "lpo",
+      "title": "Media Luna #10 - Porte\u00f1a"
+     },
+     {
+      "code": "lpf",
+      "title": "Media Luna #10 - Porte\u00f1a (Flattened Version)"
+     },
+     {
+      "code": "lpu",
+      "title": "Media Luna #11 - Puntana"
+     },
+     {
+      "code": "lna",
+      "title": "Media Luna #11 - Puntana (Adapted)"
+     },
+     {
+      "code": "lco",
+      "title": "Media Luna #12 - Cordobesa"
+     },
+     {
+      "code": "lct",
+      "title": "Media Luna #12 - Correntina"
+     },
+     {
+      "code": "lcr",
+      "title": "Media Luna #12 - Catamarque\u00f1a"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Early Tango Around the World (1911-1915)",
+  "subs": [
+   {
+    "name": "Full Song Demo",
+    "items": [
+     {
+      "code": "efs",
+      "title": "Full Song Demo"
+     }
+    ]
+   },
+   {
+    "name": "Walking",
+    "items": [
+     {
+      "code": "elm",
+      "title": "La Marcha"
+     },
+     {
+      "code": "eep",
+      "title": "El Paseo"
+     },
+     {
+      "code": "ers",
+      "title": "Running Step"
+     }
+    ]
+   },
+   {
+    "name": "Cortes",
+    "items": [
+     {
+      "code": "eca",
+      "title": "Corte A (Forward, Side, Close, Back)"
+     },
+     {
+      "code": "etf",
+      "title": "Corte A (with Toe to Floor)"
+     },
+     {
+      "code": "etr",
+      "title": "Corte A (with Toe Raised)"
+     },
+     {
+      "code": "eaa",
+      "title": "Corte A (1, and, 2, 3 Timing)"
+     },
+     {
+      "code": "eaw",
+      "title": "Corte A2 (Forward, Side, Replace, Back)"
+     },
+     {
+      "code": "eah",
+      "title": "Corte A3 (Forward, Forward, Close, Back)"
+     },
+     {
+      "code": "eaf",
+      "title": "Corte A4 (Forward, Forward, Heel Strike, Back)"
+     },
+     {
+      "code": "eav",
+      "title": "Corte A5 (Forward, Forward, Replace, Back)"
+     },
+     {
+      "code": "eax",
+      "title": "Corte A6 (Cross, Forward, Close, Back)"
+     },
+     {
+      "code": "eas",
+      "title": "Corte A7 (Cross, Throwaway, Back)"
+     },
+     {
+      "code": "eat",
+      "title": "Corte A7 (Throwaway) (Adapted)"
+     },
+     {
+      "code": "eae",
+      "title": "Corte A8 (Forward, Sweep Forward, Back)"
+     },
+     {
+      "code": "ean",
+      "title": "Corte A9 (Forward, Close without Weight, Back)"
+     },
+     {
+      "code": "ead",
+      "title": "Corte A10 (Forward, Point Side, Back)"
+     },
+     {
+      "code": "eal",
+      "title": "Corte A11 (Back, Side, Close, Forward)"
+     },
+     {
+      "code": "eac",
+      "title": "Corte A12 (Back, Brush, Forward)"
+     },
+     {
+      "code": "ear",
+      "title": "Corte A13 (Foot Displacement)"
+     },
+     {
+      "code": "ecb",
+      "title": "Corte B (Back, Side, Close, Back)"
+     },
+     {
+      "code": "ebw",
+      "title": "Corte B2 (Back, Side, Replace, Back)"
+     },
+     {
+      "code": "ebh",
+      "title": "Corte B3 (Back, Side, Heel Strike, Back)"
+     },
+     {
+      "code": "ebf",
+      "title": "Corte B4 (Back, Close without Weight, Back)"
+     },
+     {
+      "code": "ebv",
+      "title": "Corte B5 (Cross Behind, Point Side, Back)"
+     },
+     {
+      "code": "ecc",
+      "title": "Corte C (Forward, Forward, Close, Forward)"
+     },
+     {
+      "code": "ecd",
+      "title": "Corte D (Single Hesitation Corte)"
+     },
+     {
+      "code": "ece",
+      "title": "Corte E (Sentada Combination)"
+     },
+     {
+      "code": "ecf",
+      "title": "Corte F (Double Box Corte)"
+     }
+    ]
+   },
+   {
+    "name": "El Ocho",
+    "items": [
+     {
+      "code": "eoo",
+      "title": "Ochos (Open Styling)"
+     },
+     {
+      "code": "eop",
+      "title": "Ochos (Points Styling)"
+     },
+     {
+      "code": "eok",
+      "title": "Ochos (Kicks Styling)"
+     },
+     {
+      "code": "eos",
+      "title": "Ochos (Sweeps Styling)"
+     },
+     {
+      "code": "eof",
+      "title": "Ochos (Feather Stitch Styling)"
+     },
+     {
+      "code": "eoe",
+      "title": "The Feather Stitch"
+     },
+     {
+      "code": "eow",
+      "title": "Ochos (Swivels Styling)"
+     },
+     {
+      "code": "eob",
+      "title": "Ochos, Big and Small (Pivots Styling)"
+     },
+     {
+      "code": "eoc",
+      "title": "Ochos (Back Ochos)"
+     },
+     {
+      "code": "efo",
+      "title": "Ochos (Follow's Solo)"
+     },
+     {
+      "code": "eoh",
+      "title": "Sheaves"
+     },
+     {
+      "code": "epp",
+      "title": "Pointed Paseo"
+     },
+     {
+      "code": "ems",
+      "title": "Ochos (The Major Scissors)"
+     },
+     {
+      "code": "enm",
+      "title": "The Nip Up and Major Scissors"
+     },
+     {
+      "code": "eoa",
+      "title": "Ochos (Back and Forward Version)"
+     }
+    ]
+   },
+   {
+    "name": "Scissors",
+    "items": [
+     {
+      "code": "esc",
+      "title": "Scissors"
+     },
+     {
+      "code": "esb",
+      "title": "Scissors, Big and Small"
+     },
+     {
+      "code": "esr",
+      "title": "Scissors, Big and Small with Crossed Corte"
+     },
+     {
+      "code": "ess",
+      "title": "Side Step Scissors"
+     },
+     {
+      "code": "esi",
+      "title": "Side Step Scissors, Big and Small"
+     },
+     {
+      "code": "esa",
+      "title": "Back Side Step Scissors for the Lead"
+     },
+     {
+      "code": "eps",
+      "title": "Promenade and Swivel"
+     }
+    ]
+   },
+   {
+    "name": "Three Step Promenade",
+    "items": [
+     {
+      "code": "ets",
+      "title": "Three Step Promenade (Pointing Version)"
+     },
+     {
+      "code": "etc",
+      "title": "Three Step Promenade (Closing Version)"
+     },
+     {
+      "code": "eta",
+      "title": "Three Step Promenade (Pointing and Closing Version)"
+     },
+     {
+      "code": "etw",
+      "title": "Three Step Promenade (Twisting Version)"
+     },
+     {
+      "code": "etm",
+      "title": "Three Step Promenade (Stamping Version)"
+     }
+    ]
+   },
+   {
+    "name": "La Rueda",
+    "items": [
+     {
+      "code": "eru",
+      "title": "Rueda"
+     },
+     {
+      "code": "erc",
+      "title": "Rueda (Follow's Chass\u00e9)"
+     },
+     {
+      "code": "err",
+      "title": "Rueda (Follow's Crossing Chass\u00e9)"
+     },
+     {
+      "code": "erg",
+      "title": "Rueda (Go and Return)"
+     },
+     {
+      "code": "erf",
+      "title": "Rueda (Follow's Pivot)"
+     }
+    ]
+   },
+   {
+    "name": "Media Lunas",
+    "items": [
+     {
+      "code": "ema",
+      "title": "Media Luna A (Box)"
+     },
+     {
+      "code": "eml",
+      "title": "Media Luna A (Box, SQQ Version)"
+     },
+     {
+      "code": "eme",
+      "title": "Media Luna A (Box, Extended Version)"
+     },
+     {
+      "code": "emt",
+      "title": "Media Luna B (Stamps)"
+     },
+     {
+      "code": "emc",
+      "title": "Media Luna C (Cross and Lock)"
+     },
+     {
+      "code": "emd",
+      "title": "Media Luna D (Sweeps)"
+     },
+     {
+      "code": "emb",
+      "title": "Media Luna E (Balanc\u00e9)"
+     },
+     {
+      "code": "emf",
+      "title": "Media Luna F (Forward, Close, Back)"
+     },
+     {
+      "code": "emp",
+      "title": "Media Luna G (Polka)"
+     },
+     {
+      "code": "emm",
+      "title": "Media Luna H (The Major Luna)"
+     },
+     {
+      "code": "epm",
+      "title": "Promenade Major Luna"
+     },
+     {
+      "code": "emi",
+      "title": "Media Luna I (Crossing Diamond)"
+     }
+    ]
+   },
+   {
+    "name": "Tango Waltzes",
+    "items": [
+     {
+      "code": "esw",
+      "title": "Slow Waltz"
+     },
+     {
+      "code": "ewc",
+      "title": "Waltz Corte"
+     },
+     {
+      "code": "ett",
+      "title": "Turning Two Step"
+     },
+     {
+      "code": "ele",
+      "title": "L'Eventail"
+     },
+     {
+      "code": "etw",
+      "title": "Tango Waltz"
+     },
+     {
+      "code": "ees",
+      "title": "The Eight Step"
+     },
+     {
+      "code": "eeb",
+      "title": "The Eight Step (Backing Version)"
+     },
+     {
+      "code": "eec",
+      "title": "El Charron"
+     },
+     {
+      "code": "ees",
+      "title": "The Eight Step (Sixteen Count Version)"
+     },
+     {
+      "code": "epb",
+      "title": "Pivot from Back the Follow to Back the Lead)"
+     },
+     {
+      "code": "eps",
+      "title": "Single Pivot"
+     },
+     {
+      "code": "epd",
+      "title": "Double Pivot"
+     },
+     {
+      "code": "egp",
+      "title": "Grapevine Pivots"
+     }
+    ]
+   },
+   {
+    "name": "Grapevines & Other Crosses",
+    "items": [
+     {
+      "code": "egr",
+      "title": "Grapevine (Right in Front)"
+     },
+     {
+      "code": "egb",
+      "title": "Grapevine (Right Behind)"
+     },
+     {
+      "code": "edg",
+      "title": "Figura del Ebrio (Drunken Grapevine)"
+     },
+     {
+      "code": "evo",
+      "title": "Volteo"
+     },
+     {
+      "code": "elc",
+      "title": "La Cruz"
+     }
+    ]
+   },
+   {
+    "name": "Chass\u00e9s",
+    "items": [
+     {
+      "code": "edr",
+      "title": "The Draw"
+     },
+     {
+      "code": "ech",
+      "title": "Tango Chass\u00e9"
+     },
+     {
+      "code": "ecr",
+      "title": "Tango Chass\u00e9 (Cross Step First)"
+     },
+     {
+      "code": "eck",
+      "title": "Tango Chass\u00e9 (Backing Version)"
+     },
+     {
+      "code": "enu",
+      "title": "The Nip Up"
+     }
+    ]
+   },
+   {
+    "name": "Floorplay",
+    "items": [
+     {
+      "code": "eft",
+      "title": "The Tapping Figure"
+     },
+     {
+      "code": "efc",
+      "title": "The Tapping Figure (in Closed Position)"
+     },
+     {
+      "code": "efn",
+      "title": "The Tapping Figure (in Closed Position, Slow Version)"
+     },
+     {
+      "code": "efm",
+      "title": "Mazurka Figure"
+     },
+     {
+      "code": "efb",
+      "title": "Paso Oblico"
+     },
+     {
+      "code": "efk",
+      "title": "Paso Oblico (Knee In, Knee Out)"
+     },
+     {
+      "code": "efh",
+      "title": "Paso Oblico (Point and Chass\u00e9)"
+     },
+     {
+      "code": "efw",
+      "title": "Paso Oblico (Point and Two Step)"
+     },
+     {
+      "code": "efv",
+      "title": "The Seven Step"
+     },
+     {
+      "code": "efr",
+      "title": "The Screw Figure"
+     },
+     {
+      "code": "efg",
+      "title": "Walk and Swing"
+     },
+     {
+      "code": "efp",
+      "title": "El Golpeado"
+     },
+     {
+      "code": "efe",
+      "title": "Preliminary Heel Rap"
+     },
+     {
+      "code": "eff",
+      "title": "El Frotado"
+     },
+     {
+      "code": "efy",
+      "title": "Preliminary Frotado"
+     },
+     {
+      "code": "efi",
+      "title": "La Criolla"
+     }
+    ]
+   },
+   {
+    "name": "Rocking Steps",
+    "items": [
+     {
+      "code": "eks",
+      "title": "Single Hesitation"
+     },
+     {
+      "code": "ekr",
+      "title": "Rocking Turn (to the Right)"
+     },
+     {
+      "code": "ekl",
+      "title": "Rocking Turn (to the Left)"
+     },
+     {
+      "code": "ekm",
+      "title": "Molinete"
+     },
+     {
+      "code": "ekd",
+      "title": "Double Hesitation"
+     }
+    ]
+   },
+   {
+    "name": "Lunges and Dips",
+    "items": [
+     {
+      "code": "elb",
+      "title": "The Bend Step"
+     },
+     {
+      "code": "elp",
+      "title": "Promenade and Lunge"
+     },
+     {
+      "code": "edp",
+      "title": "Dip"
+     }
+    ]
+   },
+   {
+    "name": "Changing the Feet",
+    "items": [
+     {
+      "code": "ebr",
+      "title": "Changing Feet with a Bend and Rock"
+     },
+     {
+      "code": "ehp",
+      "title": "Changing Feet by Holding in Place"
+     },
+     {
+      "code": "eeq",
+      "title": "Changing Feet with an Extra Quick Step"
+     },
+     {
+      "code": "ehb",
+      "title": "Changing Feet with Half of a Box"
+     },
+     {
+      "code": "etb",
+      "title": "Traveling Box (with Collected Feet)"
+     }
+    ]
+   },
+   {
+    "name": "Fantasies on the Tango",
+    "items": [
+     {
+      "code": "ein",
+      "title": "Innovation"
+     },
+     {
+      "code": "esk",
+      "title": "Skaters' Position"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "name": "Post-War Tango",
+  "subs": [
+   {
+    "name": "1920s English Tango Sequences",
+    "items": [
+     {
+      "code": "bre",
+      "title": "Royal Empress Tango (1922)"
+     },
+     {
+      "code": "blo",
+      "title": "Lola Tango (1923)"
+     },
+     {
+      "code": "bst",
+      "title": "Square Tango (1924)"
+     }
+    ]
+   },
+   {
+    "name": "1920s American Tango",
+    "items": [
+     {
+      "code": "mwa",
+      "title": "The Tango Walk or Promenade"
+     },
+     {
+      "code": "mco",
+      "title": "The Cortez"
+     },
+     {
+      "code": "mca",
+      "title": "The Chasse"
+     },
+     {
+      "code": "mel",
+      "title": "The El Sharon"
+     },
+     {
+      "code": "msc",
+      "title": "The Single Cortez"
+     }
+    ]
+   },
+   {
+    "name": "1930s American Tango",
+    "items": [
+     {
+      "code": "mpr",
+      "title": "The Tango Promenade"
+     },
+     {
+      "code": "mch",
+      "title": "The Chas\u00e9"
+     },
+     {
+      "code": "mct",
+      "title": "The Cort\u00e9"
+     },
+     {
+      "code": "msh",
+      "title": "El Sharon"
+     },
+     {
+      "code": "mms",
+      "title": "Arthur Murray's Tango Step"
+     }
+    ]
+   }
+  ]
+ }
+]
