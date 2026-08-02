@@ -222,9 +222,12 @@ window.onYouTubeIframeAPIReady = function () {
     events: {
       onReady: () => { ready = true; applyState(start); },
       onStateChange: (ev) => {
+        // fallback: if the watcher missed the cut, restart anyway
         if (ev.data === YT.PlayerState.ENDED && loop) {
           player.seekTo(0, true); player.playVideo();
         }
+        if (ev.data === YT.PlayerState.PLAYING) startLoopWatch();
+        else stopLoopWatch();
       }
     }
   });
@@ -268,6 +271,23 @@ function select(code, play) {
   }
   const active = nav.querySelector('button.item.active');
   if (active) active.scrollIntoView({ block: 'nearest' });
+}
+
+/* ---- seamless loop: jump back just BEFORE the video ends, so the
+   end screen / black frame never appears ---- */
+let loopTimer = null;
+function startLoopWatch() {
+  if (loopTimer) return;
+  loopTimer = setInterval(() => {
+    if (!loop || !ready) return;
+    const d = player.getDuration();
+    if (d > 1 && player.getCurrentTime() >= d - 0.25) {
+      player.seekTo(0, true);
+    }
+  }, 60);
+}
+function stopLoopWatch() {
+  if (loopTimer) { clearInterval(loopTimer); loopTimer = null; }
 }
 
 /* ---- controls ---- */
