@@ -72,6 +72,7 @@
     box-shadow: 0 12px 40px rgba(0,0,0,.5);
   }
   #frame-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  #frame-wrap.mirrored iframe { transform: scaleX(-1); }
   /* ---------- Controls ---------- */
   #controls {
     display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
@@ -123,6 +124,7 @@
     <div id="controls">
       <button class="btn" id="btn-restart" title="Volver al inicio (R)">⟲ Reiniciar</button>
       <button class="btn" id="btn-loop" title="Repetir al terminar (L)">🔁 Bucle</button>
+      <button class="btn" id="btn-mirror" title="Invertir el video horizontalmente (M)">🪞 Espejo</button>
       <div class="grp" id="speed" title="Velocidad de reproducción">
         <button class="btn" data-rate="0.25">0.25×</button>
         <button class="btn" data-rate="0.5">0.5×</button>
@@ -135,7 +137,7 @@
     </div>
     <div id="links"></div>
     <div id="keys">
-      Atajos: <kbd>Espacio</kbd> pausa · <kbd>R</kbd> reiniciar · <kbd>L</kbd> bucle · <kbd>←</kbd>/<kbd>→</kbd> anterior/siguiente · <kbd>/</kbd> buscar
+      Atajos: <kbd>Espacio</kbd> pausa · <kbd>R</kbd> reiniciar · <kbd>L</kbd> bucle · <kbd>M</kbd> espejo · <kbd>←</kbd>/<kbd>→</kbd> anterior/siguiente · <kbd>/</kbd> buscar
     </div>
   </div>
 </main>
@@ -308,6 +310,20 @@ loopBtn.addEventListener('click', () => {
   if (fallbackMode && current) fallbackLoad(current, false);
 });
 
+/* ---- mirror mode ---- */
+const mirrorBtn = document.getElementById('btn-mirror');
+const frameWrap = document.getElementById('frame-wrap');
+let mirror = localStorage.getItem('lod-mirror') === '1';
+function renderMirror() {
+  frameWrap.classList.toggle('mirrored', mirror);
+  mirrorBtn.classList.toggle('on', mirror);
+}
+renderMirror();
+mirrorBtn.addEventListener('click', () => {
+  mirror = !mirror; renderMirror();
+  localStorage.setItem('lod-mirror', mirror ? '1' : '0');
+});
+
 document.getElementById('speed').addEventListener('click', (ev) => {
   const b = ev.target.closest('[data-rate]');
   if (!b) return;
@@ -339,6 +355,7 @@ document.addEventListener('keydown', (ev) => {
   }
   else if (ev.key === 'r' || ev.key === 'R') restart();
   else if (ev.key === 'l' || ev.key === 'L') loopBtn.click();
+  else if (ev.key === 'm' || ev.key === 'M') mirrorBtn.click();
   else if (ev.key === 'ArrowLeft') step(-1);
   else if (ev.key === 'ArrowRight') step(1);
   else if (ev.key === '/') { ev.preventDefault(); searchBox.focus(); }
