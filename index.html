@@ -72,7 +72,11 @@
     box-shadow: 0 12px 40px rgba(0,0,0,.5);
   }
   #frame-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-  #frame-wrap.mirrored iframe { transform: scaleX(-1); }
+  #frame-wrap.mirrored iframe, #frame-wrap.mirrored #overlay { transform: scaleX(-1); }
+  #overlay {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 2;
+  }
   /* ---------- Controls ---------- */
   #controls {
     display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
@@ -120,11 +124,12 @@
   <div id="stage">
     <div id="crumb"></div>
     <h2 id="vtitle"></h2>
-    <div id="frame-wrap"><div id="player"></div></div>
+    <div id="frame-wrap"><div id="player"></div><canvas id="overlay"></canvas></div>
     <div id="controls">
       <button class="btn" id="btn-restart" title="Volver al inicio (R)">⟲ Reiniciar</button>
       <button class="btn" id="btn-loop" title="Repetir al terminar (L)">🔁 Bucle</button>
       <button class="btn" id="btn-mirror" title="Invertir el video horizontalmente (M)">🪞 Espejo</button>
+      <button class="btn hidden" id="btn-anno" title="Flechas y guías sobre el video (A)">✏️ Guías</button>
       <div class="grp" id="speed" title="Velocidad de reproducción">
         <button class="btn" data-rate="0.25">0.25×</button>
         <button class="btn" data-rate="0.5">0.5×</button>
@@ -137,7 +142,7 @@
     </div>
     <div id="links"></div>
     <div id="keys">
-      Atajos: <kbd>Espacio</kbd> pausa · <kbd>R</kbd> reiniciar · <kbd>L</kbd> bucle · <kbd>M</kbd> espejo · <kbd>←</kbd>/<kbd>→</kbd> anterior/siguiente · <kbd>/</kbd> buscar
+      Atajos: <kbd>Espacio</kbd> pausa · <kbd>R</kbd> reiniciar · <kbd>L</kbd> bucle · <kbd>M</kbd> espejo · <kbd>A</kbd> guías · <kbd>←</kbd>/<kbd>→</kbd> anterior/siguiente · <kbd>/</kbd> buscar
     </div>
   </div>
 </main>
@@ -249,6 +254,7 @@ function applyState(entry) {
   for (const b of nav.querySelectorAll('button.item'))
     b.classList.toggle('active', b.dataset.code === entry.c);
   localStorage.setItem('lod-last', entry.c);
+  if (typeof renderAnnoBtn === 'function') renderAnnoBtn();
 }
 
 let fallbackMode = false;
@@ -324,6 +330,138 @@ mirrorBtn.addEventListener('click', () => {
   localStorage.setItem('lod-mirror', mirror ? '1' : '0');
 });
 
+/* ==== annotation overlay (reel-style arrows & guides) ====
+   Coordinates are normalized (0-1) over the video frame.
+   Each item: t:[start,end] seconds; fades in/out at the edges.
+   - arrow: from/to (+optional track: [[t,x],...] keyframes shifting x)
+   - arc:   c, r, a0/a1 in degrees, arrowhead at a1
+   - eight: lemniscate at c with radii rx/ry + dot cycling with period
+   - text:  p, s                                                    */
+const ANNO = {
+  awa: [
+    { type: 'text', t: [0.2, 1.4], p: [0.24, 0.30], s: 'Abrazo: pausa inicial' },
+    { type: 'arrow', t: [1.2, 8.2], from: [-0.09, 0.72], to: [0.13, 0.72], dash: 1,
+      track: [[1.2, 0.14], [3.0, 0.27], [5.0, 0.32], [6.5, 0.52], [8.2, 0.70]] },
+    { type: 'text', t: [1.5, 5.0], p: [0.50, 0.14], s: 'El líder avanza — la seguidora retrocede' },
+    { type: 'text', t: [5.5, 8.2], p: [0.50, 0.14], s: 'Peso entero en cada paso, al compás' },
+  ],
+  aoc: [
+    { type: 'text', t: [0.4, 3.0], p: [0.47, 0.16], s: 'Ochos frente al líder' },
+    { type: 'eight', t: [1.0, 12.6], c: [0.49, 0.78], rx: 0.09, ry: 0.030, period: 6 },
+    { type: 'text', t: [4.0, 8.0], p: [0.47, 0.16], s: 'La seguidora dibuja un 8 en el piso' },
+    { type: 'text', t: [9.0, 12.4], p: [0.47, 0.16], s: 'Pivote en cada cruce' },
+  ],
+  aga: [
+    { type: 'text', t: [0.4, 2.0], p: [0.45, 0.16], s: 'Preparación: ocho atrás' },
+    { type: 'arc', t: [2.2, 3.4], c: [0.48, 0.66], r: 0.045, a0: 100, a1: 400 },
+    { type: 'text', t: [2.2, 3.8], p: [0.45, 0.14], s: '¡Gancho! La pierna engancha por detrás' },
+    { type: 'text', t: [5.0, 7.3], p: [0.55, 0.16], s: 'Salida caminando' },
+  ],
+};
+
+const annoBtn = document.getElementById('btn-anno');
+const canvas = document.getElementById('overlay');
+const ctx = canvas.getContext('2d');
+let showAnno = localStorage.getItem('lod-anno') !== '0';
+
+function renderAnnoBtn() {
+  const has = current && ANNO[current.c];
+  annoBtn.classList.toggle('hidden', !has);
+  annoBtn.classList.toggle('on', !!has && showAnno);
+}
+annoBtn.addEventListener('click', () => {
+  showAnno = !showAnno;
+  localStorage.setItem('lod-anno', showAnno ? '1' : '0');
+  renderAnnoBtn();
+});
+// mark annotated videos in the sidebar
+for (const b of nav.querySelectorAll('button.item'))
+  if (ANNO[b.dataset.code]) b.textContent += ' ✏️';
+renderAnnoBtn();
+
+function lerpTrack(track, t) {
+  if (t <= track[0][0]) return track[0][1];
+  for (let i = 1; i < track.length; i++) {
+    if (t <= track[i][0]) {
+      const [t0, v0] = track[i - 1], [t1, v1] = track[i];
+      return v0 + (v1 - v0) * (t - t0) / (t1 - t0);
+    }
+  }
+  return track[track.length - 1][1];
+}
+
+function arrowHead(x, y, angle, size) {
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x - size * Math.cos(angle - 0.44), y - size * Math.sin(angle - 0.44));
+  ctx.moveTo(x, y);
+  ctx.lineTo(x - size * Math.cos(angle + 0.44), y - size * Math.sin(angle + 0.44));
+  ctx.stroke();
+}
+
+function drawAnno(t) {
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  const list = (showAnno && current && ANNO[current.c]) || [];
+  const lw = Math.max(2, w / 320);
+  for (const a of list) {
+    const [t0, t1] = a.t;
+    if (t < t0 || t > t1) continue;
+    const alpha = Math.min(1, (t - t0) / 0.3, (t1 - t) / 0.3);
+    ctx.globalAlpha = Math.max(0, alpha);
+    ctx.strokeStyle = ctx.fillStyle = '#fff';
+    ctx.lineWidth = lw;
+    ctx.shadowColor = 'rgba(0,0,0,.75)'; ctx.shadowBlur = lw * 2;
+    if (a.type === 'arrow') {
+      const dx = a.track ? lerpTrack(a.track, t) : 0;
+      const x1 = (a.from[0] + dx) * w, y1 = a.from[1] * h;
+      const x2 = (a.to[0] + dx) * w, y2 = a.to[1] * h;
+      ctx.setLineDash(a.dash ? [lw * 3, lw * 3] : []);
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.setLineDash([]);
+      arrowHead(x2, y2, Math.atan2(y2 - y1, x2 - x1), lw * 5);
+    } else if (a.type === 'arc') {
+      const cx = a.c[0] * w, cy = a.c[1] * h, r = a.r * w;
+      const a0 = a.a0 * Math.PI / 180, a1 = a.a1 * Math.PI / 180;
+      ctx.beginPath(); ctx.arc(cx, cy, r, a0, a1); ctx.stroke();
+      arrowHead(cx + r * Math.cos(a1), cy + r * Math.sin(a1), a1 + Math.PI / 2, lw * 5);
+    } else if (a.type === 'eight') {
+      const cx = a.c[0] * w, cy = a.c[1] * h, rx = a.rx * w, ry = a.ry * h * 4;
+      ctx.setLineDash([lw * 2, lw * 2]);
+      ctx.beginPath();
+      for (let i = 0; i <= 100; i++) {
+        const u = i / 100 * 2 * Math.PI;
+        const px = cx + rx * Math.sin(u), py = cy + ry * Math.sin(u) * Math.cos(u);
+        i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+      }
+      ctx.closePath(); ctx.stroke(); ctx.setLineDash([]);
+      const u = (t - a.t[0]) / a.period * 2 * Math.PI;
+      ctx.beginPath();
+      ctx.arc(cx + rx * Math.sin(u), cy + ry * Math.sin(u) * Math.cos(u), lw * 2.2, 0, 7);
+      ctx.fill();
+    } else if (a.type === 'text') {
+      ctx.font = `italic 600 ${Math.max(13, w / 42)}px system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(a.s, a.p[0] * w, a.p[1] * h);
+    }
+  }
+  ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+}
+
+function annoLoop() {
+  const rect = frameWrap.getBoundingClientRect();
+  if (canvas.width !== Math.round(rect.width) || canvas.height !== Math.round(rect.height)) {
+    canvas.width = Math.round(rect.width); canvas.height = Math.round(rect.height);
+  }
+  let t = -1;
+  if (ready && !fallbackMode && player.getCurrentTime) {
+    try { t = player.getCurrentTime(); } catch (e) {}
+  }
+  drawAnno(t);
+  requestAnimationFrame(annoLoop);
+}
+requestAnimationFrame(annoLoop);
+
 document.getElementById('speed').addEventListener('click', (ev) => {
   const b = ev.target.closest('[data-rate]');
   if (!b) return;
@@ -356,6 +494,7 @@ document.addEventListener('keydown', (ev) => {
   else if (ev.key === 'r' || ev.key === 'R') restart();
   else if (ev.key === 'l' || ev.key === 'L') loopBtn.click();
   else if (ev.key === 'm' || ev.key === 'M') mirrorBtn.click();
+  else if (ev.key === 'a' || ev.key === 'A') { if (!annoBtn.classList.contains('hidden')) annoBtn.click(); }
   else if (ev.key === 'ArrowLeft') step(-1);
   else if (ev.key === 'ArrowRight') step(1);
   else if (ev.key === '/') { ev.preventDefault(); searchBox.focus(); }
